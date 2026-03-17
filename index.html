@@ -15,7 +15,6 @@
             --text-main: #F8FAFC;
         }
 
-        /* Light Mode Variables */
         body.light-mode {
             --surface: #F1F5F9;
             --text-main: #0F172A;
@@ -32,7 +31,6 @@
         }
         h1, h2, h3 { font-family: 'Outfit', sans-serif; }
 
-        /* Animated Aurora Background */
         .aurora-container {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -60,11 +58,10 @@
             100% { transform: translate(15%, 15%) scale(1.1); }
         }
 
-        /* Glassmorphism Classes */
         .glass {
             background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(24px) saturate(200%);
+            -webkit-backdrop-filter: blur(24px) saturate(200%);
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: background 0.5s ease, border 0.5s ease, box-shadow 0.5s ease;
         }
@@ -74,11 +71,12 @@
             box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.03), 0 10px 30px -10px rgba(0, 0, 0, 0.04);
         }
 
-        /* Product Card */
         .product-card {
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             transform-style: preserve-3d;
+            cursor: grab;
         }
+        .product-card:active { cursor: grabbing; }
         .product-card:hover {
             border-color: rgba(99, 102, 241, 0.5);
             background: rgba(30, 41, 59, 0.6);
@@ -89,7 +87,6 @@
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.06);
         }
 
-        /* Custom Inputs */
         .custom-input {
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -109,7 +106,6 @@
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
         }
 
-        /* Category Banner */
         .category-banner {
             height: 320px;
             border-radius: 40px;
@@ -136,7 +132,6 @@
             background: linear-gradient(180deg, transparent 20%, rgba(241, 245, 249, 0.9) 100%);
         }
 
-        /* Utility */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -154,14 +149,12 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Light mode text colors */
         body.light-mode .text-white { color: #0f172a !important; }
         body.light-mode .text-slate-300 { color: #334155 !important; }
         body.light-mode .text-slate-400 { color: #475569 !important; }
         body.light-mode .bg-slate-950\/40 { background: #f1f5f9 !important; }
         body.light-mode .product-card h3 { color: #0f172a !important; }
         
-        /* Force white text for Sync button and SKU counter in light mode */
         body.light-mode .bg-indigo-600, 
         body.light-mode #save-btn,
         body.light-mode #save-btn *,
@@ -169,6 +162,59 @@
         body.light-mode .sku-counter-box *,
         body.light-mode .status-badge {
             color: white !important;
+        }
+
+        .bundle-drop-active {
+            border: 2px dashed #6366F1 !important;
+            background: rgba(99, 102, 241, 0.15) !important;
+            transform: scale(1.01);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.1);
+        }
+
+        .summary-stat-box {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        body.light-mode .summary-stat-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .bundle-item-chip {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* --- Improved Bundle Bar Styles --- */
+        .bundle-bar-label {
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #94a3b8; /* slate-400 */
+            margin-bottom: 2px;
+        }
+        body.light-mode .bundle-bar-label { color: #64748b; }
+
+        .bundle-bar-value {
+            font-size: 14px;
+            font-weight: 900;
+            color: #f8fafc;
+        }
+        body.light-mode .bundle-bar-value { color: #0f172a; }
+
+        .bundle-action-panel {
+            background: rgba(2, 6, 23, 0.8);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding-left: 1.5rem;
+        }
+        body.light-mode .bundle-action-panel {
+            background: rgba(248, 250, 252, 0.9);
+            border-left: 1px solid rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
@@ -180,7 +226,7 @@
     </div>
 
     <div class="flex flex-col lg:flex-row min-h-screen p-4 md:p-6 lg:p-8 gap-6">
-        <!-- Sidebar: Removed overflow-hidden to allow indicator bubble to peek out -->
+        <!-- Sidebar -->
         <aside class="w-full lg:w-[420px] flex flex-col z-30 lg:sticky lg:top-8 lg:h-[calc(100vh-64px)]">
             <div class="glass rounded-[40px] p-8 h-full flex flex-col">
                 <div class="mb-10 flex items-center gap-5">
@@ -194,9 +240,7 @@
                 </div>
 
                 <div class="flex-grow space-y-8 overflow-y-auto pr-2 hide-scrollbar">
-                    <!-- Adjusted padding-top to give space for the Edit Indicator bubble -->
                     <section class="bg-slate-950/40 p-7 pt-10 rounded-[2.5rem] border border-white/5 relative mt-4">
-                        <!-- Edit Indicator: Centered and floating above the section -->
                         <div id="edit-indicator" class="hidden absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full text-white shadow-xl animate-bounce z-50 whitespace-nowrap">
                             Editing Product
                         </div>
@@ -290,7 +334,8 @@
             </div>
         </aside>
 
-        <main class="flex-grow flex flex-col gap-8">
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col gap-8 pb-48">
             <header class="glass rounded-[32px] p-4 flex flex-col xl:flex-row justify-between items-center gap-4 z-20">
                 <div class="relative w-full xl:w-[460px] group">
                     <svg class="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -320,13 +365,23 @@
                 </div>
             </header>
 
-            <div id="content-area" class="space-y-32 pb-32">
+            <div id="content-area" class="space-y-32">
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     <div class="h-[420px] rounded-[3rem] skeleton"></div>
                     <div class="h-[420px] rounded-[3rem] skeleton"></div>
                     <div class="h-[420px] rounded-[3rem] skeleton"></div>
                 </div>
             </div>
+
+            <!-- Active Bundles Gallery -->
+            <section id="saved-bundles-section" class="mt-20 space-y-10">
+                <div class="flex items-center gap-6">
+                    <h2 class="text-4xl font-black text-white tracking-tighter" data-t="active-bundles-title">Active Bundles</h2>
+                    <div class="h-[2px] flex-grow bg-white/5"></div>
+                    <span id="bundle-count" class="bg-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest">0 Saved</span>
+                </div>
+                <div id="bundles-gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            </section>
 
             <div id="empty-state" class="hidden py-40 text-center flex flex-col items-center">
                 <div class="w-32 h-32 bg-slate-900/50 rounded-full flex items-center justify-center mb-8 border border-white/5 text-slate-700">
@@ -335,6 +390,75 @@
                 <p class="text-slate-500 text-2xl font-bold" data-t="empty-msg">No products in cloud database.</p>
             </div>
         </main>
+    </div>
+
+    <!-- Floating Bundle Builder Bar (RE-STYLED FOR READABILITY) -->
+    <div id="bundle-container" class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-[60]">
+        <div id="bundle-dropzone" class="glass rounded-[2.5rem] p-2 shadow-[0_35px_110px_-15px_rgba(0,0,0,0.9)] border border-white/15 flex flex-col lg:flex-row items-stretch transition-all duration-500 overflow-hidden">
+            
+            <!-- Left: Builder Status -->
+            <div class="flex lg:flex-col items-center justify-center gap-3 py-4 lg:py-0 px-8 bg-slate-950/40 rounded-[2rem] m-2">
+                <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-600/30">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                </div>
+                <div class="text-center">
+                    <span class="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-400" data-t="bundle-title">Builder</span>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase mt-0.5 tracking-tighter" data-t="bundle-desc">New Draft</p>
+                </div>
+            </div>
+
+            <!-- Middle: Dropped Items Area -->
+            <div id="bundle-items" class="flex-grow flex items-center gap-4 overflow-x-auto py-4 px-6 hide-scrollbar min-h-[90px]">
+                <div id="bundle-placeholder" class="flex items-center justify-center w-full">
+                    <p class="text-[11px] text-slate-500 font-bold uppercase tracking-[0.2em] opacity-40 animate-pulse" data-t="bundle-empty">Drop items here to combine</p>
+                </div>
+            </div>
+
+            <!-- Right: Action Panel (Major Readability Overhaul) -->
+            <div class="bundle-action-panel flex flex-wrap items-center gap-6 p-4 rounded-r-[2.5rem]">
+                
+                <!-- Metrics Breakdown -->
+                <div class="flex gap-8 px-2">
+                    <div class="flex flex-col">
+                        <span class="bundle-bar-label" data-t="total-cost-label">Total Cost</span>
+                        <span id="bundle-cost-display" class="bundle-bar-value text-rose-400">RM 0.00</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="bundle-bar-label" data-t="retail-sum-label">Retail Sum</span>
+                        <span id="bundle-retail-display" class="bundle-bar-value text-slate-400">RM 0.00</span>
+                    </div>
+                </div>
+
+                <!-- Input Field -->
+                <div class="flex flex-col bg-slate-950/80 p-3 rounded-2xl border border-white/5">
+                    <span class="bundle-bar-label mb-2 text-indigo-400" data-t="deal-price-label">Proposed Bundle Price</span>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-black text-indigo-500">RM</span>
+                        <input type="number" id="bundle-price-input" placeholder="0.00" class="bg-slate-900 border border-indigo-500/20 rounded-xl pl-11 pr-4 py-3 text-lg text-white font-black w-44 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 placeholder:text-slate-800 transition-all">
+                    </div>
+                </div>
+
+                <!-- Results/Badge -->
+                <div id="bundle-profit-badge" class="flex flex-col justify-center items-center bg-indigo-600/5 border border-indigo-500/10 p-4 rounded-2xl min-w-[140px] transition-all">
+                    <span class="bundle-bar-label mb-1" data-t="bundle-profit-label">Est. Profit</span>
+                    <div class="flex flex-col items-center">
+                        <span id="bundle-profit-val" class="text-xl font-black text-slate-500 leading-none">RM 0.00</span>
+                        <span id="bundle-margin-val" class="text-[10px] font-black text-slate-600 mt-1 tracking-widest">0% MARGIN</span>
+                    </div>
+                </div>
+
+                <!-- Final Actions -->
+                <div class="flex items-center gap-3 ml-2">
+                    <button id="clear-bundle" class="p-4 bg-slate-900 hover:bg-rose-500/10 text-slate-500 hover:text-rose-500 rounded-2xl border border-white/5 transition-all group" title="Reset Builder">
+                        <svg class="w-6 h-6 group-active:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                    <button id="save-bundle-btn" disabled class="px-10 py-5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-20 disabled:grayscale text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] transition-all shadow-2xl shadow-indigo-600/20 active:scale-95 flex items-center gap-3" data-t="btn-save-bundle">
+                        <span>Save Bundle</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module">
@@ -356,25 +480,132 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const inventoryRef = collection(db, "pim_inventory");
+        const bundlesRef = collection(db, "pim_bundles");
 
         const translations = {
             en: {
-                "main-title": "PIM Cloud", "sub-title": "Inventory Management", "search-placeholder": "Search name or SKU code...", "btn-backup": "Export CSV", "sku-count-label": "SKU Count", "nav-kitchen": "Kitchen Appliances", "nav-laundry": "Bathroom Solutions", "nav-cooling": "Cooling Systems", "nav-small": "Smart Gadgets", "form-title": "Inventory Entry", "label-name": "Product Title", "ph-name": "e.g. Panasonic OLED TV", "label-sku": "SKU", "label-cat": "Group", "cat-k": "Kitchen", "cat-l": "Bathroom", "cat-c": "Cooling", "cat-s": "Small Items", "label-cost": "Cost (RM)", "label-price": "Price (RM)", "label-stock": "Available Stock", "label-spec": "Tech Specs", "ph-spec": "500W / 15 Liters", "btn-save": "Sync to Cloud", "btn-update": "Update Product", "btn-cancel": "Cancel Editing", "sync-init": "Initializing Sync...", "sync-desc": "Real-time Firebase link enabled.", "empty-msg": "No records found matching your search.", "items-unit": "Items", "margin-label": "Margin", "stock-label": "Stock", "spec-label": "Spec", "cost-label": "Cost", "profit-label": "Profit", "price-label": "Sales Price", "delete-confirm": "Permanently delete this cloud entry?", "sync-success": "Cloud Synced", "sync-fail": "Connection Offline", "label-brand": "Brand", "label-dim": "Dimension", "label-colour": "Colour", "label-power": "Power"
+                "main-title": "PIM Cloud",
+                "sub-title": "Inventory Management",
+                "search-placeholder": "Search name or SKU code...",
+                "btn-backup": "Export CSV",
+                "sku-count-label": "SKU Count",
+                "nav-kitchen": "Kitchen Appliances",
+                "nav-laundry": "Bathroom Solutions",
+                "nav-cooling": "Cooling Systems",
+                "nav-small": "Smart Gadgets",
+                "form-title": "Inventory Entry",
+                "label-name": "Product Title",
+                "ph-name": "e.g. Panasonic OLED TV",
+                "label-sku": "SKU",
+                "label-cat": "Group",
+                "cat-k": "Kitchen",
+                "cat-l": "Bathroom",
+                "cat-c": "Cooling",
+                "cat-s": "Small Items",
+                "label-cost": "Cost (RM)",
+                "label-price": "Price (RM)",
+                "label-stock": "Available Stock",
+                "label-spec": "Tech Specs",
+                "ph-spec": "500W / 15 Liters",
+                "btn-save": "Sync to Cloud",
+                "btn-update": "Update Product",
+                "btn-cancel": "Cancel Editing",
+                "sync-init": "Initializing Sync...",
+                "sync-desc": "Real-time Firebase link enabled.",
+                "empty-msg": "No records found matching your search.",
+                "items-unit": "Items",
+                "margin-label": "Margin",
+                "stock-label": "Stock",
+                "spec-label": "Spec",
+                "cost-label": "Cost",
+                "profit-label": "Profit",
+                "price-label": "Sales Price",
+                "delete-confirm": "Permanently delete this cloud entry?",
+                "sync-success": "Cloud Synced",
+                "sync-fail": "Connection Offline",
+                "label-brand": "Brand",
+                "label-dim": "Dimension",
+                "label-colour": "Colour",
+                "label-power": "Power",
+                "bundle-title": "Builder",
+                "bundle-desc": "New Bundle",
+                "btn-save-bundle": "Save Bundle",
+                "active-bundles-title": "Active Bundles",
+                "bundle-empty": "Drag products here to start a new bundle",
+                "total-cost-label": "Total Cost",
+                "retail-sum-label": "Retail Sum",
+                "deal-price-label": "Proposed Bundle Price",
+                "bundle-profit-label": "Est. Profit"
             },
             zh: {
-                "main-title": "产品 PIM 云系统", "sub-title": "库存管理大师", "search-placeholder": "搜索产品名称或 SKU...", "btn-backup": "备份至 CSV", "sku-count-label": "在线 SKU 数量", "nav-kitchen": "厨房电器", "nav-laundry": "浴室解决方案", "nav-cooling": "制冷与空调", "nav-small": "小型设备", "form-title": "库存录入", "label-name": "产品名称", "ph-name": "例如：松下智能冰箱", "label-sku": "SKU", "label-cat": "分类", "cat-k": "厨房", "cat-l": "浴室", "cat-c": "制冷", "cat-s": "小型项目", "label-cost": "成本 (RM)", "label-price": "售价 (RM)", "label-stock": "库存数量", "label-spec": "技术规格", "ph-spec": "12.5KG / 2000W", "btn-save": "同步到云端", "btn-update": "更新产品", "btn-cancel": "取消编辑", "sync-init": "正在初始化同步...", "sync-desc": "Firebase 实时连接已启用。", "empty-msg": "未找到匹配的产品数据。", "items-unit": "件", "margin-label": "利润率", "stock-label": "库存", "spec-label": "规格", "cost-label": "成本", "profit-label": "利润", "price-label": "销售价格", "delete-confirm": "确定要从云端数据库中永久移除此产品吗？", "sync-success": "云端已同步", "sync-fail": "连接失败", "label-brand": "品牌", "label-dim": "尺寸", "label-colour": "颜色", "label-power": "功率"
+                "main-title": "产品 PIM 云系统",
+                "sub-title": "库存管理大师",
+                "search-placeholder": "搜索产品名称或 SKU...",
+                "btn-backup": "备份至 CSV",
+                "sku-count-label": "在线 SKU 数量",
+                "nav-kitchen": "厨房电器",
+                "nav-laundry": "浴室解决方案",
+                "nav-cooling": "制冷与空调",
+                "nav-small": "小型设备",
+                "form-title": "库存录入",
+                "label-name": "产品名称",
+                "ph-name": "例如：松下智能冰箱",
+                "label-sku": "SKU",
+                "label-cat": "分类",
+                "cat-k": "厨房",
+                "cat-l": "浴室",
+                "cat-c": "制冷",
+                "cat-s": "小型项目",
+                "label-cost": "成本 (RM)",
+                "label-price": "售价 (RM)",
+                "label-stock": "库存数量",
+                "label-spec": "技术规格",
+                "ph-spec": "12.5KG / 2000W",
+                "btn-save": "同步到云端",
+                "btn-update": "更新产品",
+                "btn-cancel": "取消编辑",
+                "sync-init": "正在初始化同步...",
+                "sync-desc": "Firebase 实时连接已启用。",
+                "empty-msg": "未找到匹配的产品数据。",
+                "items-unit": "件",
+                "margin-label": "利润率",
+                "stock-label": "库存",
+                "spec-label": "规格",
+                "cost-label": "成本",
+                "profit-label": "利润",
+                "price-label": "销售价格",
+                "delete-confirm": "确定要从云端数据库中永久移除此产品吗？",
+                "sync-success": "云端已同步",
+                "sync-fail": "连接失败",
+                "label-brand": "品牌",
+                "label-dim": "尺寸",
+                "label-colour": "颜色",
+                "label-power": "功率",
+                "bundle-title": "生成器",
+                "bundle-desc": "新建组合",
+                "btn-save-bundle": "保存组合",
+                "active-bundles-title": "已保存的组合",
+                "bundle-empty": "拖动产品至此以开始新组合",
+                "total-cost-label": "组合成本",
+                "retail-sum-label": "原价总和",
+                "deal-price-label": "组合优惠价",
+                "bundle-profit-label": "组合利润"
             }
         };
 
         let currentLang = 'en';
         let products = [];
+        let savedBundles = [];
         let searchQuery = "";
         let isDarkMode = false;
         let isEditing = false;
+        let currentBundleItems = [];
 
         const form = document.getElementById('product-form');
         const contentArea = document.getElementById('content-area');
         const countDisplay = document.getElementById('product-count');
+        const bundleCountDisplay = document.getElementById('bundle-count');
+        const bundlesGallery = document.getElementById('bundles-gallery');
         const searchInput = document.getElementById('search-input');
         const syncStatus = document.getElementById('sync-status');
         const langToggle = document.getElementById('lang-toggle');
@@ -382,6 +613,17 @@
         const themeToggle = document.getElementById('theme-toggle');
         const cancelEditBtn = document.getElementById('cancel-edit');
         const editIndicator = document.getElementById('edit-indicator');
+
+        const bundleDropzone = document.getElementById('bundle-dropzone');
+        const bundleItemsContainer = document.getElementById('bundle-items');
+        const bundleCostDisplay = document.getElementById('bundle-cost-display');
+        const bundleRetailDisplay = document.getElementById('bundle-retail-display');
+        const bundlePriceInput = document.getElementById('bundle-price-input');
+        const bundleProfitVal = document.getElementById('bundle-profit-val');
+        const bundleMarginVal = document.getElementById('bundle-margin-val');
+        const clearBundleBtn = document.getElementById('clear-bundle');
+        const saveBundleBtn = document.getElementById('save-bundle-btn');
+        const bundleProfitBadge = document.getElementById('bundle-profit-badge');
 
         themeToggle.addEventListener('click', () => {
             isDarkMode = !isDarkMode;
@@ -405,14 +647,10 @@
                 const key = el.getAttribute('data-t-placeholder');
                 if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
             });
-            
-            if (isEditing) {
-                saveBtn.innerText = translations[currentLang]["btn-update"];
-            } else {
-                saveBtn.innerText = translations[currentLang]["btn-save"];
-            }
-
+            saveBtn.innerText = isEditing ? translations[currentLang]["btn-update"] : translations[currentLang]["btn-save"];
             renderDashboard();
+            renderBundles();
+            updateBundleBuilderUI();
         }
 
         onSnapshot(query(inventoryRef, orderBy("createdAt", "desc")), (snapshot) => {
@@ -420,9 +658,11 @@
             renderDashboard();
             syncStatus.innerText = translations[currentLang]["sync-success"];
             syncStatus.className = 'text-xs text-emerald-400 font-black uppercase tracking-widest';
-        }, (error) => {
-            syncStatus.innerText = translations[currentLang]["sync-fail"];
-            syncStatus.className = 'text-xs text-rose-500 font-black uppercase tracking-widest';
+        });
+
+        onSnapshot(query(bundlesRef, orderBy("createdAt", "desc")), (snapshot) => {
+            savedBundles = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderBundles();
         });
 
         searchInput.addEventListener('input', (e) => {
@@ -433,7 +673,7 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             saveBtn.disabled = true;
-            
+
             const cost = parseFloat(document.getElementById('cost').value);
             const price = parseFloat(document.getElementById('price').value);
             const margin = price > 0 ? (((price - cost) / price) * 100).toFixed(1) : 0;
@@ -464,8 +704,8 @@
                     await addDoc(inventoryRef, productData);
                     form.reset();
                 }
-            } catch (err) { 
-                console.error(err);
+            } catch (err) {
+                console.error("Firestore Error:", err);
             } finally {
                 saveBtn.disabled = false;
             }
@@ -475,25 +715,22 @@
 
         function startEditing(product) {
             isEditing = true;
-            // Fallback empty strings for undefined fields to avoid "undefined" text in UI
             document.getElementById('edit-id').value = product.id;
             document.getElementById('name').value = product.name || '';
             document.getElementById('sku').value = product.sku || '';
             document.getElementById('category').value = product.category || 'Kitchen';
-            document.getElementById('brand').value = (product.brand === 'N/A' || !product.brand) ? '' : product.brand;
-            document.getElementById('dimension').value = (product.dimension === 'N/A' || !product.dimension) ? '' : product.dimension;
-            document.getElementById('colour').value = (product.colour === 'N/A' || !product.colour) ? '' : product.colour;
-            document.getElementById('power').value = (product.power === 'N/A' || !product.power) ? '' : product.power;
+            document.getElementById('brand').value = product.brand === 'N/A' ? '' : product.brand;
+            document.getElementById('dimension').value = product.dimension === 'N/A' ? '' : product.dimension;
+            document.getElementById('colour').value = product.colour === 'N/A' ? '' : product.colour;
+            document.getElementById('power').value = product.power === 'N/A' ? '' : product.power;
             document.getElementById('cost').value = product.cost || '';
             document.getElementById('price').value = product.price || '';
             document.getElementById('stock').value = product.stock || '';
-            document.getElementById('specs').value = (product.specs === 'N/A' || !product.specs) ? '' : product.specs;
-
+            document.getElementById('specs').value = product.specs === 'N/A' ? '' : product.specs;
+            
             saveBtn.innerText = translations[currentLang]["btn-update"];
             cancelEditBtn.classList.remove('hidden');
             editIndicator.classList.remove('hidden');
-            
-            // Scroll to the sidebar form (useful on mobile)
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -506,13 +743,173 @@
             editIndicator.classList.add('hidden');
         }
 
+        function addToBundle(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            currentBundleItems.push(product);
+            updateBundleBuilderUI();
+        }
+
+        function removeFromBundle(index) {
+            currentBundleItems.splice(index, 1);
+            updateBundleBuilderUI();
+        }
+
+        window.removeBundleItem = (idx) => removeFromBundle(idx);
+
+        clearBundleBtn.onclick = () => {
+            currentBundleItems = [];
+            bundlePriceInput.value = '';
+            updateBundleBuilderUI();
+        };
+
+        bundlePriceInput.oninput = () => updateBundleBuilderUI();
+
+        function updateBundleBuilderUI() {
+            bundleItemsContainer.innerHTML = '';
+            const t = translations[currentLang];
+            
+            if (currentBundleItems.length === 0) {
+                bundleItemsContainer.innerHTML = `<div id="bundle-placeholder" class="flex items-center justify-center w-full"><p class="text-[11px] text-slate-500 font-bold uppercase tracking-[0.2em] opacity-40 animate-pulse">${t['bundle-empty']}</p></div>`;
+                bundleCostDisplay.innerText = 'RM 0.00';
+                bundleRetailDisplay.innerText = 'RM 0.00';
+                bundleProfitVal.innerText = 'RM 0.00';
+                bundleMarginVal.innerText = '0% MARGIN';
+                bundleProfitBadge.className = 'flex flex-col justify-center items-center bg-indigo-600/5 border border-indigo-500/10 p-4 rounded-2xl min-w-[140px] transition-all';
+                saveBundleBtn.disabled = true;
+                return;
+            }
+
+            let totalCost = 0;
+            let totalRetail = 0;
+
+            currentBundleItems.forEach((item, index) => {
+                totalCost += Number(item.cost);
+                totalRetail += Number(item.price);
+
+                const itemBubble = document.createElement('div');
+                itemBubble.className = 'bundle-item-chip flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 px-4 py-3 rounded-2xl shrink-0 group transition-all hover:bg-indigo-500/20';
+                itemBubble.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-[11px] font-black text-indigo-300 truncate max-w-[120px] leading-tight">${item.name}</span>
+                        <span class="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">${item.sku}</span>
+                    </div>
+                    <button onclick="window.removeBundleItem(${index})" class="w-7 h-7 rounded-xl bg-slate-900/60 flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+                bundleItemsContainer.appendChild(itemBubble);
+            });
+
+            bundleCostDisplay.innerText = `RM ${totalCost.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            bundleRetailDisplay.innerText = `RM ${totalRetail.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+            const bundlePrice = parseFloat(bundlePriceInput.value) || 0;
+            if (bundlePrice > 0) {
+                const profit = bundlePrice - totalCost;
+                const margin = ((profit / bundlePrice) * 100).toFixed(1);
+                bundleProfitVal.innerText = `RM ${profit.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+                bundleMarginVal.innerText = `${margin}% MARGIN`;
+                
+                if (profit < 0) {
+                    bundleProfitBadge.className = 'flex flex-col justify-center items-center bg-rose-500/10 border border-rose-500/20 p-4 rounded-2xl min-w-[140px] transition-all';
+                    bundleProfitVal.className = 'text-xl font-black text-rose-500 leading-none';
+                    saveBundleBtn.disabled = true;
+                } else {
+                    bundleProfitBadge.className = 'flex flex-col justify-center items-center bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl min-w-[140px] transition-all';
+                    bundleProfitVal.className = 'text-xl font-black text-emerald-400 leading-none';
+                    saveBundleBtn.disabled = false;
+                }
+            } else {
+                bundleProfitVal.innerText = 'RM 0.00';
+                bundleProfitVal.className = 'text-xl font-black text-slate-500 leading-none';
+                bundleMarginVal.innerText = '0% MARGIN';
+                saveBundleBtn.disabled = true;
+            }
+        }
+
+        saveBundleBtn.onclick = async () => {
+            const bundlePrice = parseFloat(bundlePriceInput.value);
+            const totalCost = currentBundleItems.reduce((acc, i) => acc + Number(i.cost), 0);
+            const totalRetail = currentBundleItems.reduce((acc, i) => acc + Number(i.price), 0);
+
+            const bundleData = {
+                items: currentBundleItems.map(i => ({ name: i.name, sku: i.sku, price: i.price, cost: i.cost })),
+                bundlePrice: bundlePrice,
+                totalCost: totalCost,
+                totalRetail: totalRetail,
+                profit: bundlePrice - totalCost,
+                margin: (((bundlePrice - totalCost) / bundlePrice) * 100).toFixed(1),
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                await addDoc(bundlesRef, bundleData);
+                currentBundleItems = [];
+                bundlePriceInput.value = '';
+                updateBundleBuilderUI();
+            } catch (err) { console.error(err); }
+        };
+
+        function renderBundles() {
+            bundlesGallery.innerHTML = '';
+            bundleCountDisplay.innerText = `${savedBundles.length} Saved`;
+
+            if (savedBundles.length === 0) {
+                bundlesGallery.innerHTML = `<div class="col-span-full py-12 text-center glass rounded-[2rem] border-dashed border-white/5"><p class="text-slate-500 text-sm font-bold">No active bundles saved yet.</p></div>`;
+                return;
+            }
+
+            savedBundles.forEach(bundle => {
+                const card = document.createElement('div');
+                card.className = 'glass p-8 rounded-[2.5rem] border border-white/5 flex flex-col gap-6 relative group';
+                
+                const itemsList = bundle.items.map(i => `
+                    <div class="flex justify-between items-center text-[10px] py-1 border-b border-white/5 last:border-0">
+                        <span class="text-slate-400 font-bold truncate pr-4">${i.name}</span>
+                        <div class="text-right">
+                            <p class="text-slate-500 tabular-nums">RM${Number(i.price).toLocaleString()}</p>
+                            <p class="text-[8px] text-slate-600">Cost: RM${Number(i.cost).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="bg-indigo-600/20 text-indigo-400 text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-indigo-500/20">Bundle Package</span>
+                            <h4 class="text-xl font-black text-white mt-3">${bundle.items.length} Products</h4>
+                        </div>
+                        <button onclick="window.deleteBundle('${bundle.id}')" class="text-slate-600 hover:text-rose-500 p-2 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <div class="space-y-1 bg-slate-950/40 p-4 rounded-2xl border border-white/5">${itemsList}</div>
+                    <div class="flex items-center justify-between border-t border-white/10 pt-6">
+                        <div>
+                            <p class="text-[8px] text-slate-500 uppercase font-black tracking-widest mb-1">Bundle Price</p>
+                            <p class="text-3xl font-black text-white tracking-tighter">RM ${Number(bundle.bundlePrice).toLocaleString()}</p>
+                            <p class="text-[8px] text-slate-600 font-bold">Combined Cost: RM ${Number(bundle.totalCost).toLocaleString()}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] text-emerald-400 uppercase font-black tracking-widest mb-1">Profit</p>
+                            <p class="text-lg font-black text-emerald-400 leading-none">+RM ${Number(bundle.profit).toLocaleString()}</p>
+                            <p class="text-[10px] font-bold text-emerald-500/50">${bundle.margin}% Margin</p>
+                        </div>
+                    </div>
+                `;
+                bundlesGallery.appendChild(card);
+            });
+        }
+
+        window.deleteBundle = async (id) => {
+            if (confirm("Delete this saved bundle?")) { await deleteDoc(doc(db, "pim_bundles", id)); }
+        };
+
         function renderDashboard() {
             contentArea.innerHTML = '';
             const t = translations[currentLang];
-            const filtered = products.filter(p => 
-                (p.name || '').toLowerCase().includes(searchQuery) || 
-                (p.sku || '').toLowerCase().includes(searchQuery)
-            );
+            const filtered = products.filter(p => (p.name || '').toLowerCase().includes(searchQuery) || (p.sku || '').toLowerCase().includes(searchQuery));
             countDisplay.innerText = filtered.length;
 
             if (filtered.length === 0) {
@@ -526,14 +923,15 @@
                 return acc;
             }, {});
 
+            const categories = ['Kitchen', 'Bathroom', 'Cooling', 'Small'];
             const catConfig = {
-                'Kitchen': { name: t['nav-kitchen'], img: 'https://cwservicesinc.com/wp-content/uploads/Must-Have-Small-Kitchen-Appliances.jpg' },
-                'Bathroom': { name: t['nav-laundry'], img: 'https://fancyhouse-design.com/wp-content/uploads/2023/11/A-floating-vanity-counter-is-the-star-of-this-minimalist-bathroom-design..jpg' },
+                'Kitchen': { name: t['nav-kitchen'], img: 'https://wiproappliances.com/cdn/shop/articles/revamp-kitchen-appliances_8ed59463-784c-48af-9632-ed79d17e213a.jpg?v=1764833027' },
+                'Bathroom': { name: t['nav-laundry'], img: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80' },
                 'Cooling': { name: t['nav-cooling'], img: 'https://static.vecteezy.com/system/resources/thumbnails/050/033/219/small/a-sleek-air-conditioning-unit-is-installed-high-on-the-wall-emitting-a-soft-blue-glow-while-cooling-the-room-in-the-heat-of-summer-photo.jpeg' },
                 'Small': { name: t['nav-small'], img: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=1200&q=80' }
             };
 
-            ['Kitchen', 'Bathroom', 'Cooling', 'Small'].forEach(cat => {
+            categories.forEach(cat => {
                 if (grouped[cat]) {
                     const section = document.createElement('section');
                     section.innerHTML = `
@@ -547,111 +945,61 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
                     `;
-                    
                     const grid = section.querySelector('div.grid');
                     grouped[cat].forEach((item, idx) => {
                         const card = document.createElement('div');
                         card.className = 'product-card glass p-10 rounded-[40px] flex flex-col';
+                        card.draggable = true;
                         if (idx % 3 === 1) card.classList.add('xl:translate-y-12');
 
                         card.innerHTML = `
                             <div class="flex-grow">
                                 <div class="flex justify-between items-start mb-10">
-                                    <div class="status-badge px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.margin >= 30 ? 'bg-emerald-500 text-emerald-400' : 'bg-orange-500 text-orange-400'} border border-white/5 backdrop-blur-md">
+                                    <div class="status-badge px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.margin >= 30 ? 'bg-emerald-500 text-emerald-400' : 'bg-orange-500 text-orange-400'} border border-white/5">
                                         ${item.margin}% ${t['margin-label']}
                                     </div>
                                     <div class="flex gap-2">
-                                        <button class="edit-btn p-2 rounded-xl bg-slate-800/50 text-slate-400 hover:text-amber-400 transition-colors border border-white/5">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                        </button>
-                                        <div class="status-badge px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.stock <= 2 ? 'bg-rose-500 text-rose-400' : 'bg-slate-800 text-slate-400'} border border-white/5">
-                                            ${t['stock-label']}: ${item.stock}
-                                        </div>
+                                        <button class="edit-btn p-2 rounded-xl bg-slate-800/50 text-slate-400 hover:text-amber-400 border border-white/5"><svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></button>
+                                        <div class="status-badge px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.stock <= 2 ? 'bg-rose-500 text-rose-400' : 'bg-slate-800 text-slate-400'} border border-white/5">${t['stock-label']}: ${item.stock}</div>
                                     </div>
                                 </div>
-                                <h3 class="text-3xl font-black mb-3 text-white line-clamp-2 leading-[1.1] tracking-tight hover:text-indigo-400 transition-colors cursor-pointer">${item.name}</h3>
+                                <h3 class="text-3xl font-black mb-3 text-white line-clamp-2 leading-[1.1] tracking-tight">${item.name}</h3>
                                 <p class="text-[11px] text-slate-500 font-black tracking-[0.3em] mb-10 uppercase">${item.sku}</p>
-                                
-                                <div class="p-6 bg-slate-950/40 rounded-3xl border border-white/5 mb-10 group/spec relative overflow-hidden">
+                                <div class="p-6 bg-slate-950/40 rounded-3xl border border-white/5 mb-10">
                                     <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-[11px]">
-                                        <div>
-                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-brand']}</p>
-                                            <p class="font-bold text-slate-300">${item.brand || '-'}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-colour']}</p>
-                                            <p class="font-bold text-slate-300">${item.colour || '-'}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-dim']}</p>
-                                            <p class="font-bold text-slate-300">${item.dimension || '-'}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-power']}</p>
-                                            <p class="font-bold text-slate-300">${item.power || '-'}</p>
-                                        </div>
-                                        <div class="col-span-2 pt-2 border-t border-white/5">
-                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['spec-label']}</p>
-                                            <p class="font-bold text-slate-300">${item.specs}</p>
-                                        </div>
+                                        <div><p class="text-slate-500 uppercase font-black text-[8px] mb-1">${t['label-brand']}</p><p class="font-bold text-slate-300">${item.brand}</p></div>
+                                        <div><p class="text-slate-500 uppercase font-black text-[8px] mb-1">${t['label-colour']}</p><p class="font-bold text-slate-300">${item.colour}</p></div>
+                                        <div class="col-span-2 pt-2 border-t border-white/5"><p class="text-slate-500 uppercase font-black text-[8px] mb-1">${t['spec-label']}</p><p class="font-bold text-slate-300">${item.specs}</p></div>
                                     </div>
                                 </div>
                             </div>
-                            
                             <div class="border-t border-white/10 pt-10">
                                 <div class="flex justify-between items-end">
-                                    <div class="space-y-8">
-                                        <div class="flex gap-10">
-                                            <div>
-                                                <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-2">${t['cost-label']}</p>
-                                                <p class="text-base font-bold text-slate-400 tracking-tight">RM ${Number(item.cost).toLocaleString()}</p>
-                                            </div>
-                                            <div>
-                                                <p class="text-[9px] text-indigo-400 uppercase font-black tracking-widest mb-2">${t['profit-label']}</p>
-                                                <p class="text-base font-bold text-indigo-400 tracking-tight">+RM ${Number(item.price - item.cost).toLocaleString()}</p>
-                                            </div>
+                                    <div class="space-y-6">
+                                        <div class="flex gap-8">
+                                            <div><p class="text-[9px] text-slate-500 uppercase font-black mb-1">${t['cost-label']}</p><p class="text-sm font-bold text-slate-400">RM ${Number(item.cost).toLocaleString()}</p></div>
+                                            <div><p class="text-[9px] text-indigo-400 uppercase font-black mb-1">${t['profit-label']}</p><p class="text-sm font-bold text-indigo-400">+RM ${Number(item.price - item.cost).toLocaleString()}</p></div>
                                         </div>
-                                        <div>
-                                            <p class="text-[10px] text-slate-500 uppercase font-black tracking-[0.25em] mb-2">${t['price-label']}</p>
-                                            <p class="text-5xl font-black text-white tracking-tighter tabular-nums">RM ${Number(item.price).toLocaleString()}</p>
-                                        </div>
+                                        <div><p class="text-[10px] text-slate-500 uppercase font-black mb-1">${t['price-label']}</p><p class="text-4xl font-black text-white tracking-tighter">RM ${Number(item.price).toLocaleString()}</p></div>
                                     </div>
-                                    <button class="delete-btn text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 p-5 rounded-3xl transition-all active:scale-90 border border-transparent hover:border-rose-500/20">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                    </button>
+                                    <button class="delete-btn text-slate-600 hover:text-rose-500 p-4 rounded-3xl transition-all border border-transparent hover:bg-rose-500/10"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                                 </div>
                             </div>
                         `;
-                        
-                        card.addEventListener('mousemove', (e) => {
-                            const rect = card.getBoundingClientRect();
-                            const x = e.clientX - rect.left;
-                            const y = e.clientY - rect.top;
-                            const centerX = rect.width / 2;
-                            const centerY = rect.height / 2;
-                            const rotateX = (y - centerY) / 30;
-                            const rotateY = (centerX - x) / 30;
-                            card.style.transform = `perspective(2000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
-                        });
-                        card.addEventListener('mouseleave', () => {
-                            card.style.transform = `perspective(2000px) rotateX(0deg) rotateY(0deg) translateY(0)`;
-                        });
-
-                        card.querySelector('.edit-btn').onclick = (e) => {
-                            e.stopPropagation();
-                            startEditing(item);
-                        };
-
-                        card.querySelector('.delete-btn').onclick = async (e) => {
-                            e.stopPropagation();
-                            if(confirm(t["delete-confirm"])) await deleteDoc(doc(db, "pim_inventory", item.id));
-                        };
+                        card.ondragstart = (e) => { e.dataTransfer.setData('text/plain', item.id); card.style.opacity = '0.4'; };
+                        card.ondragend = () => { card.style.opacity = '1'; };
+                        card.querySelector('.edit-btn').onclick = () => startEditing(item);
+                        card.querySelector('.delete-btn').onclick = async () => { if(confirm(t["delete-confirm"])) { await deleteDoc(doc(db, "pim_inventory", item.id)); } };
                         grid.appendChild(card);
                     });
                     contentArea.appendChild(section);
                 }
             });
         }
+
+        bundleDropzone.ondragover = (e) => { e.preventDefault(); bundleDropzone.classList.add('bundle-drop-active'); };
+        bundleDropzone.ondragleave = () => bundleDropzone.classList.remove('bundle-drop-active');
+        bundleDropzone.ondrop = (e) => { e.preventDefault(); bundleDropzone.classList.remove('bundle-drop-active'); const id = e.dataTransfer.getData('text/plain'); if (id) addToBundle(id); };
 
         window.exportToCSV = function() {
             const t = translations[currentLang];
@@ -660,7 +1008,7 @@
             let csvContent = "data:text/csv;charset=utf-8,\ufeff" + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
             const link = document.createElement("a");
             link.href = encodeURI(csvContent);
-            link.download = `PIM_Cloud_Backup_${new Date().toLocaleDateString()}.csv`;
+            link.download = `PIM_Backup_${new Date().toLocaleDateString()}.csv`;
             link.click();
         }
 
