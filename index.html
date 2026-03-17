@@ -19,7 +19,7 @@
         body.light-mode {
             --surface: #F1F5F9;
             --text-main: #0F172A;
-            --card: rgba(255, 255, 255, 0.7);
+            --card: rgba(255, 255, 255, 0.85);
         }
 
         body {
@@ -66,12 +66,12 @@
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: background 0.5s ease, border 0.5s ease;
+            transition: background 0.5s ease, border 0.5s ease, box-shadow 0.5s ease;
         }
         body.light-mode .glass {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             border: 1px solid rgba(0, 0, 0, 0.05);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.03), 0 10px 30px -10px rgba(0, 0, 0, 0.04);
         }
 
         /* Product Card */
@@ -86,7 +86,7 @@
         }
         body.light-mode .product-card:hover {
             background: white;
-            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.06);
         }
 
         /* Custom Inputs */
@@ -123,6 +123,9 @@
             overflow: hidden;
             box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
         }
+        body.light-mode .category-banner {
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.08);
+        }
         .category-banner::after {
             content: '';
             position: absolute;
@@ -131,9 +134,6 @@
         }
         body.light-mode .category-banner::after {
             background: linear-gradient(180deg, transparent 20%, rgba(241, 245, 249, 0.9) 100%);
-        }
-        body.light-mode .category-banner h2 {
-            color: #0f172a;
         }
 
         /* Utility */
@@ -160,10 +160,19 @@
         body.light-mode .text-slate-400 { color: #475569 !important; }
         body.light-mode .bg-slate-950\/40 { background: #f1f5f9 !important; }
         body.light-mode .product-card h3 { color: #0f172a !important; }
+        
+        /* Force white text for Sync button and SKU counter in light mode */
+        body.light-mode .bg-indigo-600, 
+        body.light-mode #save-btn,
+        body.light-mode #save-btn *,
+        body.light-mode .bg-indigo-600 *,
+        body.light-mode .sku-counter-box *,
+        body.light-mode .status-badge {
+            color: white !important;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-indigo-500/30 light-mode">
-    <!-- Animated Orbs -->
     <div class="aurora-container">
         <div class="orb bg-indigo-600" style="top: -20%; left: -10%;"></div>
         <div class="orb bg-purple-600" style="bottom: -20%; right: -10%; animation-delay: -7s;"></div>
@@ -171,10 +180,9 @@
     </div>
 
     <div class="flex flex-col lg:flex-row min-h-screen p-4 md:p-6 lg:p-8 gap-6">
-        
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar: Removed overflow-hidden to allow indicator bubble to peek out -->
         <aside class="w-full lg:w-[420px] flex flex-col z-30 lg:sticky lg:top-8 lg:h-[calc(100vh-64px)]">
-            <div class="glass rounded-[40px] p-8 h-full flex flex-col overflow-hidden">
+            <div class="glass rounded-[40px] p-8 h-full flex flex-col">
                 <div class="mb-10 flex items-center gap-5">
                     <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/20 rotate-6">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
@@ -186,12 +194,19 @@
                 </div>
 
                 <div class="flex-grow space-y-8 overflow-y-auto pr-2 hide-scrollbar">
-                    <section class="bg-slate-950/40 p-7 rounded-[2.5rem] border border-white/5">
+                    <!-- Adjusted padding-top to give space for the Edit Indicator bubble -->
+                    <section class="bg-slate-950/40 p-7 pt-10 rounded-[2.5rem] border border-white/5 relative mt-4">
+                        <!-- Edit Indicator: Centered and floating above the section -->
+                        <div id="edit-indicator" class="hidden absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-[10px] font-black uppercase tracking-widest px-5 py-2 rounded-full text-white shadow-xl animate-bounce z-50 whitespace-nowrap">
+                            Editing Product
+                        </div>
+
                         <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-8 flex items-center gap-3">
                             <span class="w-8 h-[2px] bg-indigo-500/50"></span>
                             <span data-t="form-title">Product Entry</span>
                         </h2>
                         <form id="product-form" class="space-y-6">
+                            <input type="hidden" id="edit-id">
                             <div>
                                 <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-name">Product Name</label>
                                 <input type="text" id="name" data-t-placeholder="ph-name" placeholder="e.g. Smart Refrigerator" class="custom-input text-sm w-full" required>
@@ -253,9 +268,14 @@
                                     <input type="text" id="specs" data-t-placeholder="ph-spec" placeholder="10kg / 500L" class="custom-input text-sm w-full">
                                 </div>
                             </div>
-                            <button type="submit" id="save-btn" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50" data-t="btn-save">
-                                Sync to Cloud
-                            </button>
+                            <div class="flex flex-col gap-3">
+                                <button type="submit" id="save-btn" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50" data-t="btn-save">
+                                    Sync to Cloud
+                                </button>
+                                <button type="button" id="cancel-edit" class="hidden w-full py-3 bg-slate-800 text-slate-400 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-slate-700 transition-colors" data-t="btn-cancel">
+                                    Cancel Editing
+                                </button>
+                            </div>
                         </form>
                     </section>
 
@@ -270,10 +290,7 @@
             </div>
         </aside>
 
-        <!-- Main Content Area -->
         <main class="flex-grow flex flex-col gap-8">
-            
-            <!-- Unified Header Bar -->
             <header class="glass rounded-[32px] p-4 flex flex-col xl:flex-row justify-between items-center gap-4 z-20">
                 <div class="relative w-full xl:w-[460px] group">
                     <svg class="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -281,7 +298,6 @@
                 </div>
 
                 <div class="flex items-center gap-3 w-full xl:w-auto overflow-x-auto hide-scrollbar pb-1 xl:pb-0">
-                    <!-- Theme Toggle -->
                     <button id="theme-toggle" class="bg-slate-950/40 hover:bg-slate-900 border-none rounded-2xl px-5 py-4 flex items-center justify-center transition-all group">
                         <svg id="sun-icon" class="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
                         <svg id="moon-icon" class="w-5 h-5 text-indigo-400 hidden group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
@@ -295,7 +311,7 @@
                         <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         <span data-t="btn-backup">CSV Backup</span>
                     </button>
-                    <div class="bg-indigo-600 px-8 py-4 rounded-2xl shadow-lg shadow-indigo-900/20 flex items-center gap-4 min-w-max">
+                    <div class="sku-counter-box bg-indigo-600 px-8 py-4 rounded-2xl shadow-lg shadow-indigo-900/20 flex items-center gap-4 min-w-max">
                         <div class="text-left">
                             <span class="text-[8px] text-indigo-200 block font-black uppercase tracking-[0.2em] leading-none mb-1.5" data-t="sku-count-label">SKU Online</span>
                             <span id="product-count" class="text-2xl font-black text-white leading-none">0</span>
@@ -304,7 +320,6 @@
                 </div>
             </header>
 
-            <!-- Categorized View Area -->
             <div id="content-area" class="space-y-32 pb-32">
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     <div class="h-[420px] rounded-[3rem] skeleton"></div>
@@ -325,10 +340,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
-            getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp 
+            getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyD1xDsdxSTi0z9SCRiFxI4S_GwEvIWO7z0",
             authDomain: "wmsmartpim.firebaseapp.com",
@@ -345,17 +359,18 @@
 
         const translations = {
             en: {
-                "main-title": "PIM Cloud", "sub-title": "Inventory Management", "search-placeholder": "Search name or SKU code...", "btn-backup": "Export CSV", "sku-count-label": "SKU Count", "nav-kitchen": "Kitchen Appliances", "nav-laundry": "Bathroom Solutions", "nav-cooling": "Cooling Systems", "nav-small": "Smart Gadgets", "form-title": "Inventory Entry", "label-name": "Product Title", "ph-name": "e.g. Panasonic OLED TV", "label-sku": "SKU", "label-cat": "Group", "cat-k": "Kitchen", "cat-l": "Bathroom", "cat-c": "Cooling", "cat-s": "Small Items", "label-cost": "Cost (RM)", "label-price": "Price (RM)", "label-stock": "Available Stock", "label-spec": "Tech Specs", "ph-spec": "500W / 15 Liters", "btn-save": "Sync to Cloud", "sync-init": "Initializing Sync...", "sync-desc": "Real-time Firebase link enabled.", "empty-msg": "No records found matching your search.", "items-unit": "Items", "margin-label": "Margin", "stock-label": "Stock", "spec-label": "Spec", "cost-label": "Cost", "profit-label": "Profit", "price-label": "Sales Price", "delete-confirm": "Permanently delete this cloud entry?", "sync-success": "Cloud Synced", "sync-fail": "Connection Offline", "label-brand": "Brand", "label-dim": "Dimension", "label-colour": "Colour", "label-power": "Power"
+                "main-title": "PIM Cloud", "sub-title": "Inventory Management", "search-placeholder": "Search name or SKU code...", "btn-backup": "Export CSV", "sku-count-label": "SKU Count", "nav-kitchen": "Kitchen Appliances", "nav-laundry": "Bathroom Solutions", "nav-cooling": "Cooling Systems", "nav-small": "Smart Gadgets", "form-title": "Inventory Entry", "label-name": "Product Title", "ph-name": "e.g. Panasonic OLED TV", "label-sku": "SKU", "label-cat": "Group", "cat-k": "Kitchen", "cat-l": "Bathroom", "cat-c": "Cooling", "cat-s": "Small Items", "label-cost": "Cost (RM)", "label-price": "Price (RM)", "label-stock": "Available Stock", "label-spec": "Tech Specs", "ph-spec": "500W / 15 Liters", "btn-save": "Sync to Cloud", "btn-update": "Update Product", "btn-cancel": "Cancel Editing", "sync-init": "Initializing Sync...", "sync-desc": "Real-time Firebase link enabled.", "empty-msg": "No records found matching your search.", "items-unit": "Items", "margin-label": "Margin", "stock-label": "Stock", "spec-label": "Spec", "cost-label": "Cost", "profit-label": "Profit", "price-label": "Sales Price", "delete-confirm": "Permanently delete this cloud entry?", "sync-success": "Cloud Synced", "sync-fail": "Connection Offline", "label-brand": "Brand", "label-dim": "Dimension", "label-colour": "Colour", "label-power": "Power"
             },
             zh: {
-                "main-title": "产品 PIM 云系统", "sub-title": "库存管理大师", "search-placeholder": "搜索产品名称或 SKU...", "btn-backup": "备份至 CSV", "sku-count-label": "在线 SKU 数量", "nav-kitchen": "厨房电器", "nav-laundry": "浴室解决方案", "nav-cooling": "制冷与空调", "nav-small": "小型设备", "form-title": "库存录入", "label-name": "产品名称", "ph-name": "例如：松下智能冰箱", "label-sku": "SKU", "label-cat": "分类", "cat-k": "厨房", "cat-l": "浴室", "cat-c": "制冷", "cat-s": "小型项目", "label-cost": "成本 (RM)", "label-price": "售价 (RM)", "label-stock": "库存数量", "label-spec": "技术规格", "ph-spec": "12.5KG / 2000W", "btn-save": "同步到云端", "sync-init": "正在初始化同步...", "sync-desc": "Firebase 实时连接已启用。", "empty-msg": "未找到匹配的产品数据。", "items-unit": "件", "margin-label": "利润率", "stock-label": "库存", "spec-label": "规格", "cost-label": "成本", "profit-label": "利润", "price-label": "销售价格", "delete-confirm": "确定要从云端数据库中永久移除此产品吗？", "sync-success": "云端已同步", "sync-fail": "连接失败", "label-brand": "品牌", "label-dim": "尺寸", "label-colour": "颜色", "label-power": "功率"
+                "main-title": "产品 PIM 云系统", "sub-title": "库存管理大师", "search-placeholder": "搜索产品名称或 SKU...", "btn-backup": "备份至 CSV", "sku-count-label": "在线 SKU 数量", "nav-kitchen": "厨房电器", "nav-laundry": "浴室解决方案", "nav-cooling": "制冷与空调", "nav-small": "小型设备", "form-title": "库存录入", "label-name": "产品名称", "ph-name": "例如：松下智能冰箱", "label-sku": "SKU", "label-cat": "分类", "cat-k": "厨房", "cat-l": "浴室", "cat-c": "制冷", "cat-s": "小型项目", "label-cost": "成本 (RM)", "label-price": "售价 (RM)", "label-stock": "库存数量", "label-spec": "技术规格", "ph-spec": "12.5KG / 2000W", "btn-save": "同步到云端", "btn-update": "更新产品", "btn-cancel": "取消编辑", "sync-init": "正在初始化同步...", "sync-desc": "Firebase 实时连接已启用。", "empty-msg": "未找到匹配的产品数据。", "items-unit": "件", "margin-label": "利润率", "stock-label": "库存", "spec-label": "规格", "cost-label": "成本", "profit-label": "利润", "price-label": "销售价格", "delete-confirm": "确定要从云端数据库中永久移除此产品吗？", "sync-success": "云端已同步", "sync-fail": "连接失败", "label-brand": "品牌", "label-dim": "尺寸", "label-colour": "颜色", "label-power": "功率"
             }
         };
 
         let currentLang = 'en';
         let products = [];
         let searchQuery = "";
-        let isDarkMode = false; // Set default to false (Light Mode)
+        let isDarkMode = false;
+        let isEditing = false;
 
         const form = document.getElementById('product-form');
         const contentArea = document.getElementById('content-area');
@@ -365,8 +380,9 @@
         const langToggle = document.getElementById('lang-toggle');
         const saveBtn = document.getElementById('save-btn');
         const themeToggle = document.getElementById('theme-toggle');
+        const cancelEditBtn = document.getElementById('cancel-edit');
+        const editIndicator = document.getElementById('edit-indicator');
 
-        // Theme Logic
         themeToggle.addEventListener('click', () => {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('light-mode', !isDarkMode);
@@ -381,7 +397,6 @@
         });
 
         function updateUI() {
-            document.title = translations[currentLang]["main-title"];
             document.querySelectorAll('[data-t]').forEach(el => {
                 const key = el.getAttribute('data-t');
                 if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
@@ -390,6 +405,13 @@
                 const key = el.getAttribute('data-t-placeholder');
                 if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
             });
+            
+            if (isEditing) {
+                saveBtn.innerText = translations[currentLang]["btn-update"];
+            } else {
+                saveBtn.innerText = translations[currentLang]["btn-save"];
+            }
+
             renderDashboard();
         }
 
@@ -416,7 +438,7 @@
             const price = parseFloat(document.getElementById('price').value);
             const margin = price > 0 ? (((price - cost) / price) * 100).toFixed(1) : 0;
 
-            const newProduct = {
+            const productData = {
                 name: document.getElementById('name').value,
                 sku: document.getElementById('sku').value,
                 category: document.getElementById('category').value,
@@ -429,12 +451,19 @@
                 stock: parseInt(document.getElementById('stock').value),
                 margin: margin,
                 specs: document.getElementById('specs').value || 'N/A',
-                createdAt: serverTimestamp()
+                updatedAt: serverTimestamp()
             };
 
             try {
-                await addDoc(inventoryRef, newProduct);
-                form.reset();
+                if (isEditing) {
+                    const docId = document.getElementById('edit-id').value;
+                    await updateDoc(doc(db, "pim_inventory", docId), productData);
+                    resetForm();
+                } else {
+                    productData.createdAt = serverTimestamp();
+                    await addDoc(inventoryRef, productData);
+                    form.reset();
+                }
             } catch (err) { 
                 console.error(err);
             } finally {
@@ -442,10 +471,48 @@
             }
         });
 
+        cancelEditBtn.addEventListener('click', resetForm);
+
+        function startEditing(product) {
+            isEditing = true;
+            // Fallback empty strings for undefined fields to avoid "undefined" text in UI
+            document.getElementById('edit-id').value = product.id;
+            document.getElementById('name').value = product.name || '';
+            document.getElementById('sku').value = product.sku || '';
+            document.getElementById('category').value = product.category || 'Kitchen';
+            document.getElementById('brand').value = (product.brand === 'N/A' || !product.brand) ? '' : product.brand;
+            document.getElementById('dimension').value = (product.dimension === 'N/A' || !product.dimension) ? '' : product.dimension;
+            document.getElementById('colour').value = (product.colour === 'N/A' || !product.colour) ? '' : product.colour;
+            document.getElementById('power').value = (product.power === 'N/A' || !product.power) ? '' : product.power;
+            document.getElementById('cost').value = product.cost || '';
+            document.getElementById('price').value = product.price || '';
+            document.getElementById('stock').value = product.stock || '';
+            document.getElementById('specs').value = (product.specs === 'N/A' || !product.specs) ? '' : product.specs;
+
+            saveBtn.innerText = translations[currentLang]["btn-update"];
+            cancelEditBtn.classList.remove('hidden');
+            editIndicator.classList.remove('hidden');
+            
+            // Scroll to the sidebar form (useful on mobile)
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            isEditing = false;
+            form.reset();
+            document.getElementById('edit-id').value = '';
+            saveBtn.innerText = translations[currentLang]["btn-save"];
+            cancelEditBtn.classList.add('hidden');
+            editIndicator.classList.add('hidden');
+        }
+
         function renderDashboard() {
             contentArea.innerHTML = '';
             const t = translations[currentLang];
-            const filtered = products.filter(p => p.name.toLowerCase().includes(searchQuery) || p.sku.toLowerCase().includes(searchQuery));
+            const filtered = products.filter(p => 
+                (p.name || '').toLowerCase().includes(searchQuery) || 
+                (p.sku || '').toLowerCase().includes(searchQuery)
+            );
             countDisplay.innerText = filtered.length;
 
             if (filtered.length === 0) {
@@ -490,11 +557,16 @@
                         card.innerHTML = `
                             <div class="flex-grow">
                                 <div class="flex justify-between items-start mb-10">
-                                    <div class="px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.margin >= 30 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-orange-500/10 text-orange-400'} border border-white/5 backdrop-blur-md">
+                                    <div class="status-badge px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.margin >= 30 ? 'bg-emerald-500 text-emerald-400' : 'bg-orange-500 text-orange-400'} border border-white/5 backdrop-blur-md">
                                         ${item.margin}% ${t['margin-label']}
                                     </div>
-                                    <div class="px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.stock <= 2 ? 'bg-rose-500/20 text-rose-400' : 'bg-slate-800/60 text-slate-400'} border border-white/5">
-                                        ${t['stock-label']}: ${item.stock}
+                                    <div class="flex gap-2">
+                                        <button class="edit-btn p-2 rounded-xl bg-slate-800/50 text-slate-400 hover:text-amber-400 transition-colors border border-white/5">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                        </button>
+                                        <div class="status-badge px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.stock <= 2 ? 'bg-rose-500 text-rose-400' : 'bg-slate-800 text-slate-400'} border border-white/5">
+                                            ${t['stock-label']}: ${item.stock}
+                                        </div>
                                     </div>
                                 </div>
                                 <h3 class="text-3xl font-black mb-3 text-white line-clamp-2 leading-[1.1] tracking-tight hover:text-indigo-400 transition-colors cursor-pointer">${item.name}</h3>
@@ -523,7 +595,6 @@
                                             <p class="font-bold text-slate-300">${item.specs}</p>
                                         </div>
                                     </div>
-                                    <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-indigo-500/10 blur-2xl group-hover/spec:bg-indigo-500/20 transition-all"></div>
                                 </div>
                             </div>
                             
@@ -546,9 +617,7 @@
                                         </div>
                                     </div>
                                     <button class="delete-btn text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 p-5 rounded-3xl transition-all active:scale-90 border border-transparent hover:border-rose-500/20">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                     </button>
                                 </div>
                             </div>
@@ -568,7 +637,13 @@
                             card.style.transform = `perspective(2000px) rotateX(0deg) rotateY(0deg) translateY(0)`;
                         });
 
-                        card.querySelector('.delete-btn').onclick = async () => {
+                        card.querySelector('.edit-btn').onclick = (e) => {
+                            e.stopPropagation();
+                            startEditing(item);
+                        };
+
+                        card.querySelector('.delete-btn').onclick = async (e) => {
+                            e.stopPropagation();
                             if(confirm(t["delete-confirm"])) await deleteDoc(doc(db, "pim_inventory", item.id));
                         };
                         grid.appendChild(card);
