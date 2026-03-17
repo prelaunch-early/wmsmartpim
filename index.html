@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional PIM Dashboard</title>
+    <title>PIM Cloud System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -60,9 +60,14 @@
             transition: all 0.2s;
             cursor: pointer;
         }
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: #0077ED;
             transform: scale(1.02);
+        }
+        .btn-primary:disabled {
+            background: #A1A1A6;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
         .btn-secondary {
             background: #FFFFFF;
@@ -112,12 +117,21 @@
             background: #F5F5F7;
             border-color: #86868B;
         }
+        /* 简单加载动画 */
+        .skeleton {
+            background: linear-gradient(90deg, #eeeeee 25%, #f5f5f5 50%, #eeeeee 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <div class="max-w-7xl mx-auto">
-        <!-- Header -->
         <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
                 <h1 class="text-4xl font-semibold tracking-tight" data-t="main-title">产品 PIM 云系统</h1>
@@ -125,14 +139,12 @@
             </div>
             
             <div class="flex flex-col md:flex-row items-center gap-4">
-                <!-- Search Bar -->
                 <div class="relative w-full md:w-80">
                     <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                     <input type="text" id="search-input" data-t-placeholder="search-placeholder" placeholder="搜索产品名称或 SKU..." class="search-bar">
                 </div>
-                <!-- Language Toggle -->
                 <button id="lang-toggle" class="btn-secondary flex items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
                     <span id="lang-text">English</span>
@@ -151,7 +163,6 @@
             </div>
         </header>
 
-        <!-- Category Nav -->
         <nav class="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
             <a href="#Kitchen-Section" class="nav-chip" data-t="nav-kitchen">厨房电器</a>
             <a href="#Laundry-Section" class="nav-chip" data-t="nav-laundry">洗衣与护理</a>
@@ -160,8 +171,6 @@
         </nav>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
-            
-            <!-- Left: Input Form -->
             <aside class="lg:col-span-1">
                 <div class="bento-card p-6 rounded-[2.5rem] sticky top-8 shadow-sm">
                     <h2 class="text-xl font-semibold mb-6" data-t="form-title">新建云端条目</h2>
@@ -205,7 +214,7 @@
                                 <input type="text" id="specs" data-t-placeholder="ph-spec" placeholder="12.5KG / 2000W" class="apple-input w-full">
                             </div>
                         </div>
-                        <button type="submit" class="btn-primary w-full mt-4 py-4 text-lg" data-t="btn-save">保存到云端</button>
+                        <button type="submit" id="save-btn" class="btn-primary w-full mt-4 py-4 text-lg" data-t="btn-save">保存到云端</button>
                     </form>
                     <div class="mt-6 p-4 bg-green-50 rounded-2xl border border-green-100">
                         <p id="sync-status" class="text-[11px] text-green-600 font-medium italic" data-t="sync-init">正在初始化云同步...</p>
@@ -214,13 +223,15 @@
                 </div>
             </aside>
 
-            <!-- Right: Sectional Bento Grid Display -->
             <main class="lg:col-span-3">
                 <div id="content-area">
-                    <!-- 章节将由 JavaScript 自动注入 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <div class="h-[340px] rounded-[2.5rem] skeleton opacity-40"></div>
+                        <div class="h-[340px] rounded-[2.5rem] skeleton opacity-40"></div>
+                        <div class="h-[340px] rounded-[2.5rem] skeleton opacity-40"></div>
+                    </div>
                 </div>
                 
-                <!-- Empty State -->
                 <div id="empty-state" class="hidden py-20 text-center">
                     <p class="text-gray-400 text-lg" data-t="empty-msg">未找到匹配的产品。</p>
                 </div>
@@ -228,7 +239,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
@@ -243,7 +253,6 @@
             serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Firebase 配置
         const firebaseConfig = {
             apiKey: "AIzaSyD1xDsdxSTi0z9SCRiFxI4S_GwEvIWO7z0",
             authDomain: "wmsmartpim.firebaseapp.com",
@@ -254,172 +263,71 @@
             appId: "1:610276453653:web:2340b19bbd8a99267f4d1c"
         };
 
-        // 初始化 Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const inventoryRef = collection(db, "pim_inventory");
 
-        // --- 多语言翻译 ---
         const translations = {
             zh: {
-                "main-title": "产品 PIM 云系统",
-                "sub-title": "专业级产品库存管理系统",
-                "search-placeholder": "搜索产品名称或 SKU...",
-                "btn-backup": "备份至 CSV",
-                "sku-count-label": "在线 SKU 数量",
-                "nav-kitchen": "厨房电器",
-                "nav-laundry": "洗衣与护理",
-                "nav-cooling": "制冷与空调",
-                "nav-small": "小型设备",
-                "form-title": "新建云端条目",
-                "label-name": "产品名称",
-                "ph-name": "例如：松下冰箱",
-                "label-sku": "SKU",
-                "label-cat": "分类",
-                "cat-k": "厨房",
-                "cat-l": "洗衣",
-                "cat-c": "制冷",
-                "cat-s": "小型项目",
-                "label-cost": "成本 (RM)",
-                "label-price": "售价 (RM)",
-                "label-stock": "库存数量",
-                "label-spec": "规格",
-                "ph-spec": "12.5KG / 2000W",
-                "btn-save": "保存到云端",
-                "sync-init": "正在初始化云同步...",
-                "sync-desc": "数据将自动保存至 Firebase 数据库。",
-                "empty-msg": "未找到匹配的产品。",
-                "items-unit": "件",
-                "margin-label": "利润率",
-                "stock-label": "库存",
-                "spec-label": "规格",
-                "cost-label": "成本",
-                "profit-label": "收益",
-                "price-label": "销售价格",
-                "delete-confirm": "确定要从云端数据库中永久移除此产品吗？",
-                "sync-success": "云端已同步",
-                "sync-fail": "连接失败，请检查配置"
+                "main-title": "产品 PIM 云系统", "sub-title": "专业级产品库存管理系统", "search-placeholder": "搜索产品名称或 SKU...", "btn-backup": "备份至 CSV", "sku-count-label": "在线 SKU 数量", "nav-kitchen": "厨房电器", "nav-laundry": "洗衣与护理", "nav-cooling": "制冷与空调", "nav-small": "小型设备", "form-title": "新建云端条目", "label-name": "产品名称", "ph-name": "例如：松下冰箱", "label-sku": "SKU", "label-cat": "分类", "cat-k": "厨房", "cat-l": "洗衣", "cat-c": "制冷", "cat-s": "小型项目", "label-cost": "成本 (RM)", "label-price": "售价 (RM)", "label-stock": "库存数量", "label-spec": "规格", "ph-spec": "12.5KG / 2000W", "btn-save": "保存到云端", "sync-init": "正在初始化云同步...", "sync-desc": "数据将自动保存至 Firebase 数据库。", "empty-msg": "未找到匹配的产品。", "items-unit": "件", "margin-label": "利润率", "stock-label": "库存", "spec-label": "规格", "cost-label": "成本", "profit-label": "收益", "price-label": "销售价格", "delete-confirm": "确定要从云端数据库中永久移除此产品吗？", "sync-success": "云端已同步", "sync-fail": "连接失败"
             },
             en: {
-                "main-title": "PIM Cloud System",
-                "sub-title": "Professional Product Inventory Management",
-                "search-placeholder": "Search name or SKU...",
-                "btn-backup": "Backup to CSV",
-                "sku-count-label": "Total Online SKUs",
-                "nav-kitchen": "Kitchen",
-                "nav-laundry": "Laundry",
-                "nav-cooling": "Cooling",
-                "nav-small": "Small Items",
-                "form-title": "Add New Product",
-                "label-name": "Product Name",
-                "ph-name": "e.g. Panasonic Fridge",
-                "label-sku": "SKU",
-                "label-cat": "Category",
-                "cat-k": "Kitchen",
-                "cat-l": "Laundry",
-                "cat-c": "Cooling",
-                "cat-s": "Small Projects",
-                "label-cost": "Cost (RM)",
-                "label-price": "Price (RM)",
-                "label-stock": "Stock Level",
-                "label-spec": "Specs",
-                "ph-spec": "12.5KG / 2000W",
-                "btn-save": "Save to Cloud",
-                "sync-init": "Initializing Cloud Sync...",
-                "sync-desc": "Data is automatically saved to Firebase.",
-                "empty-msg": "No matching products found.",
-                "items-unit": "Items",
-                "margin-label": "Margin",
-                "stock-label": "Stock",
-                "spec-label": "Spec",
-                "cost-label": "Cost",
-                "profit-label": "Profit",
-                "price-label": "Selling Price",
-                "delete-confirm": "Permanently remove this product from cloud database?",
-                "sync-success": "Cloud Synced",
-                "sync-fail": "Sync Failed"
+                "main-title": "PIM Cloud System", "sub-title": "Professional Inventory Management", "search-placeholder": "Search name or SKU...", "btn-backup": "Backup to CSV", "sku-count-label": "Total Online SKUs", "nav-kitchen": "Kitchen", "nav-laundry": "Laundry", "nav-cooling": "Cooling", "nav-small": "Small Items", "form-title": "Add New Product", "label-name": "Product Name", "ph-name": "e.g. Panasonic Fridge", "label-sku": "SKU", "label-cat": "Category", "cat-k": "Kitchen", "cat-l": "Laundry", "cat-c": "Cooling", "cat-s": "Small Projects", "label-cost": "Cost (RM)", "label-price": "Price (RM)", "label-stock": "Stock Level", "label-spec": "Specs", "ph-spec": "12.5KG / 2000W", "btn-save": "Save to Cloud", "sync-init": "Initializing...", "sync-desc": "Real-time sync enabled.", "empty-msg": "No products found.", "items-unit": "Items", "margin-label": "Margin", "stock-label": "Stock", "spec-label": "Spec", "cost-label": "Cost", "profit-label": "Profit", "price-label": "Price", "delete-confirm": "Delete this item permanently?", "sync-success": "Synced", "sync-fail": "Offline"
             }
         };
 
-        // --- 应用状态 ---
         let currentLang = 'zh';
         let products = [];
         let searchQuery = "";
 
-        // DOM 元素
         const form = document.getElementById('product-form');
         const contentArea = document.getElementById('content-area');
         const countDisplay = document.getElementById('product-count');
         const searchInput = document.getElementById('search-input');
-        const emptyState = document.getElementById('empty-state');
         const syncStatus = document.getElementById('sync-status');
         const langToggle = document.getElementById('lang-toggle');
-        const langText = document.getElementById('lang-text');
+        const saveBtn = document.getElementById('save-btn');
 
-        // 初始化语言切换
         langToggle.addEventListener('click', () => {
             currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            langText.innerText = currentLang === 'zh' ? 'English' : '中文';
+            document.getElementById('lang-text').innerText = currentLang === 'zh' ? 'English' : '中文';
             updateUI();
         });
 
         function updateUI() {
-            // 更新静态文字
+            document.title = translations[currentLang]["main-title"];
             document.querySelectorAll('[data-t]').forEach(el => {
                 const key = el.getAttribute('data-t');
-                if (translations[currentLang][key]) {
-                    el.innerText = translations[currentLang][key];
-                }
+                if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
             });
-            // 更新占位符
             document.querySelectorAll('[data-t-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-t-placeholder');
-                if (translations[currentLang][key]) {
-                    el.placeholder = translations[currentLang][key];
-                }
+                if (translations[currentLang][key]) el.placeholder = translations[currentLang][key];
             });
             renderDashboard();
         }
 
-        const getCategoryName = (cat) => {
-            const map = {
-                'Kitchen': currentLang === 'zh' ? '厨房电器' : 'Kitchen',
-                'Laundry': currentLang === 'zh' ? '洗衣与护理' : 'Laundry',
-                'Cooling': currentLang === 'zh' ? '制冷与空调' : 'Cooling',
-                'Small': currentLang === 'zh' ? '小型设备' : 'Small Items'
-            };
-            return map[cat] || cat;
-        };
-
-        // 1. 实时监听 Firestore 数据
         onSnapshot(query(inventoryRef, orderBy("createdAt", "desc")), (snapshot) => {
-            products = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderDashboard();
             syncStatus.innerText = translations[currentLang]["sync-success"] + ": " + new Date().toLocaleTimeString();
         }, (error) => {
-            console.error("Firebase Error:", error);
             syncStatus.innerText = translations[currentLang]["sync-fail"];
-            syncStatus.classList.replace('text-green-600', 'text-red-600');
+            syncStatus.className = 'text-[11px] text-red-600 font-medium italic';
         });
 
-        // 2. 初始化搜索功能
         searchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value.toLowerCase();
             renderDashboard();
         });
 
-        // 3. 处理表单提交
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            saveBtn.disabled = true;
             
             const cost = parseFloat(document.getElementById('cost').value);
             const price = parseFloat(document.getElementById('price').value);
-            const stock = parseInt(document.getElementById('stock').value);
-            const profit = price - cost;
-            const margin = price > 0 ? ((profit / price) * 100).toFixed(1) : 0;
+            const margin = price > 0 ? (((price - cost) / price) * 100).toFixed(1) : 0;
 
             const newProduct = {
                 name: document.getElementById('name').value,
@@ -427,7 +335,7 @@
                 category: document.getElementById('category').value,
                 cost: cost,
                 price: price,
-                stock: stock,
+                stock: parseInt(document.getElementById('stock').value),
                 margin: margin,
                 specs: document.getElementById('specs').value || 'N/A',
                 createdAt: serverTimestamp()
@@ -436,146 +344,92 @@
             try {
                 await addDoc(inventoryRef, newProduct);
                 form.reset();
-            } catch (err) {
-                alert("Cloud save failed: " + err.message);
+            } catch (err) { 
+                alert("Error: " + err.message); 
+            } finally {
+                saveBtn.disabled = false;
             }
         });
 
-        // 4. 渲染仪表盘
         function renderDashboard() {
             contentArea.innerHTML = '';
             const t = translations[currentLang];
-            
-            const filteredProducts = products.filter(p => 
-                p.name.toLowerCase().includes(searchQuery) || 
-                p.sku.toLowerCase().includes(searchQuery)
-            );
+            const filtered = products.filter(p => p.name.toLowerCase().includes(searchQuery) || p.sku.toLowerCase().includes(searchQuery));
+            countDisplay.innerText = filtered.length;
 
-            countDisplay.innerText = filteredProducts.length;
-
-            if (filteredProducts.length === 0) {
-                emptyState.classList.remove('hidden');
+            if (filtered.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
                 return;
-            } else {
-                emptyState.classList.add('hidden');
             }
+            document.getElementById('empty-state').classList.add('hidden');
 
-            const grouped = filteredProducts.reduce((acc, obj) => {
-                const key = obj.category;
-                if (!acc[key]) acc[key] = [];
-                acc[key].push(obj);
+            const grouped = filtered.reduce((acc, obj) => {
+                (acc[obj.category] = acc[obj.category] || []).push(obj);
                 return acc;
             }, {});
 
-            const order = ['Kitchen', 'Laundry', 'Cooling', 'Small'];
+            const getCatName = (cat) => {
+                const m = { 'Kitchen': t['nav-kitchen'], 'Laundry': t['nav-laundry'], 'Cooling': t['nav-cooling'], 'Small': t['nav-small'] };
+                return m[cat] || cat;
+            };
 
-            order.forEach(cat => {
-                if (grouped[cat] && grouped[cat].length > 0) {
-                    createSection(cat, grouped[cat]);
-                }
-            });
-        }
-
-        // 5. 创建分类区块
-        function createSection(category, items) {
-            const t = translations[currentLang];
-            const section = document.createElement('section');
-            section.className = 'mb-12';
-            section.id = category + '-Section';
-            
-            const title = document.createElement('h2');
-            title.className = 'section-title';
-            title.innerHTML = `<span>${getCategoryName(category)}</span> <span class="text-xs font-medium text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-100">${items.length} ${t['items-unit']}</span>`;
-            
-            const grid = document.createElement('div');
-            grid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
-
-            items.forEach(item => {
-                const marginClass = item.margin >= 30 ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600';
-                const stockBadge = item.stock <= 2 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500';
-
-                const cardDiv = document.createElement('div');
-                cardDiv.className = 'bento-card rounded-[2.5rem] p-7 flex flex-col justify-between h-[340px]';
-                cardDiv.innerHTML = `
-                        <div>
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="badge ${marginClass}">${item.margin}% ${t['margin-label']}</span>
-                                <span class="badge ${stockBadge}">${t['stock-label']}: ${item.stock}</span>
-                            </div>
-                            <h3 class="text-xl font-semibold leading-tight mb-1 text-[#1D1D1F] line-clamp-2">${item.name}</h3>
-                            <p class="text-sm text-gray-400 font-mono tracking-tight uppercase">${item.sku}</p>
-                            
-                            <div class="mt-4 flex flex-wrap gap-2">
-                                <span class="text-[10px] text-gray-500 bg-white px-2 py-1 rounded-md border border-gray-200">${t['spec-label']}: ${item.specs}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="border-t border-gray-100 pt-5 mt-auto">
-                            <div class="flex justify-between items-end">
-                                <div>
-                                    <div class="flex gap-4 mb-2">
-                                        <div>
-                                            <p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">${t['cost-label']}</p>
-                                            <p class="text-xs text-gray-500">RM ${Number(item.cost).toLocaleString()}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">${t['profit-label']}</p>
-                                            <p class="text-xs text-blue-600 font-semibold">+RM ${(item.price - item.cost).toLocaleString()}</p>
-                                        </div>
-                                    </div>
-                                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">${t['price-label']}</p>
-                                    <p class="text-2xl font-semibold text-[#1D1D1F]">RM ${Number(item.price).toLocaleString()}</p>
+            ['Kitchen', 'Laundry', 'Cooling', 'Small'].forEach(cat => {
+                if (grouped[cat]) {
+                    const section = document.createElement('section');
+                    section.className = 'mb-12';
+                    section.id = cat + '-Section';
+                    section.innerHTML = `<h2 class="section-title"><span>${getCatName(cat)}</span> <span class="text-xs font-medium text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-100">${grouped[cat].length} ${t['items-unit']}</span></h2><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>`;
+                    
+                    const grid = section.querySelector('div');
+                    grouped[cat].forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'bento-card rounded-[2.5rem] p-7 flex flex-col justify-between h-[340px]';
+                        card.innerHTML = `
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <span class="badge ${item.margin >= 30 ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">${item.margin}% ${t['margin-label']}</span>
+                                    <span class="badge ${item.stock <= 2 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'}">${t['stock-label']}: ${item.stock}</span>
                                 </div>
-                                <button class="delete-btn text-gray-300 hover:text-red-500 transition-colors p-2 mb-1" data-id="${item.id}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1-1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
+                                <h3 class="text-xl font-semibold mb-1 line-clamp-2">${item.name}</h3>
+                                <p class="text-sm text-gray-400 font-mono uppercase">${item.sku}</p>
+                                <div class="mt-4"><span class="text-[10px] text-gray-500 bg-white px-2 py-1 rounded-md border border-gray-200">${t['spec-label']}: ${item.specs}</span></div>
                             </div>
-                        </div>
-                `;
-                
-                cardDiv.querySelector('.delete-btn').addEventListener('click', () => deleteProduct(item.id));
-                grid.appendChild(cardDiv);
-            });
-
-            section.appendChild(title);
-            section.appendChild(grid);
-            contentArea.appendChild(section);
-        }
-
-        // 6. 删除云端数据
-        async function deleteProduct(id) {
-            if(confirm(translations[currentLang]["delete-confirm"])) {
-                try {
-                    await deleteDoc(doc(db, "pim_inventory", id));
-                } catch (err) {
-                    alert("Delete failed: " + err.message);
+                            <div class="border-t border-gray-100 pt-5 mt-auto">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <div class="flex gap-4 mb-2">
+                                            <div><p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">${t['cost-label']}</p><p class="text-xs text-gray-500">RM ${Number(item.cost).toLocaleString()}</p></div>
+                                            <div><p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">${t['profit-label']}</p><p class="text-xs text-blue-600 font-semibold">+RM ${Number(item.price - item.cost).toLocaleString()}</p></div>
+                                        </div>
+                                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">${t['price-label']}</p>
+                                        <p class="text-2xl font-semibold">RM ${Number(item.price).toLocaleString()}</p>
+                                    </div>
+                                    <button class="delete-btn text-gray-300 hover:text-red-500 p-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1-1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
+                                </div>
+                            </div>
+                        `;
+                        card.querySelector('.delete-btn').onclick = async () => {
+                            if(confirm(t["delete-confirm"])) await deleteDoc(doc(db, "pim_inventory", item.id));
+                        };
+                        grid.appendChild(card);
+                    });
+                    contentArea.appendChild(section);
                 }
-            }
+            });
         }
 
-        // 7. 导出 CSV
         window.exportToCSV = function() {
-            if (products.length === 0) return;
             const t = translations[currentLang];
             const headers = [t["label-name"], t["label-sku"], t["label-cat"], t["label-cost"], t["label-price"], t["label-stock"], t["margin-label"], t["label-spec"]];
-            const rows = products.map(p => [
-                p.name, p.sku, p.category, p.cost, p.price, p.stock, p.margin, p.specs
-            ]);
-
-            let csvContent = "data:text/csv;charset=utf-8,\ufeff" 
-                + headers.join(",") + "\n"
-                + rows.map(e => e.join(",")).join("\n");
-
-            const encodedUri = encodeURI(csvContent);
+            const rows = products.map(p => [p.name, p.sku, p.category, p.cost, p.price, p.stock, p.margin, p.specs]);
+            let csvContent = "data:text/csv;charset=utf-8,\ufeff" + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "pim_backup_" + new Date().toLocaleDateString() + ".csv");
-            document.body.appendChild(link);
+            link.href = encodeURI(csvContent);
+            link.download = `PIM_Cloud_Backup_${new Date().toLocaleDateString()}.csv`;
             link.click();
-            document.body.removeChild(link);
         }
+
+        updateUI();
     </script>
 </body>
 </html>
