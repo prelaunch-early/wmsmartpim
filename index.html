@@ -1,258 +1,334 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PIM Cloud System</title>
+    <title>PIM Cloud System | Professional Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366F1;
+            --primary-hover: #4F46E5;
+            --surface: #020617;
+            --card: rgba(15, 23, 42, 0.6);
+            --text-main: #F8FAFC;
+        }
+
+        /* Light Mode Variables */
+        body.light-mode {
+            --surface: #F1F5F9;
+            --text-main: #0F172A;
+            --card: rgba(255, 255, 255, 0.7);
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #F5F5F7;
-            color: #1D1D1F;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--surface);
+            color: var(--text-main);
             scroll-behavior: smooth;
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
-        .bento-card {
+        h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+
+        /* Animated Aurora Background */
+        .aurora-container {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            transition: opacity 0.5s ease;
+        }
+        body.light-mode .aurora-container {
+            opacity: 0.15;
+            background: radial-gradient(circle at 50% 50%, #cbd5e1 0%, #f1f5f9 100%);
+        }
+
+        .orb {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.2;
+            animation: float 25s infinite alternate;
+        }
+        @keyframes float {
+            0% { transform: translate(-10%, -10%) scale(1); }
+            100% { transform: translate(15%, 15%) scale(1.1); }
+        }
+
+        /* Glassmorphism Classes */
+        .glass {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: background 0.5s ease, border 0.5s ease;
+        }
+        body.light-mode .glass {
             background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.05);
         }
-        .bento-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
-            border: 1px solid rgba(0,0,0,0.1);
+
+        /* Product Card */
+        .product-card {
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
         }
-        .apple-input {
-            background: #FFFFFF;
-            border: 1px solid #D2D2D7;
-            border-radius: 12px;
-            padding: 10px 16px;
-            transition: all 0.2s;
+        .product-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(30, 41, 59, 0.6);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.6);
         }
-        .apple-input:focus {
-            outline: none;
-            border-color: #0071E3;
-            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
-        }
-        .search-bar {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid #D2D2D7;
-            border-radius: 14px;
-            padding: 12px 20px 12px 48px;
-            width: 100%;
-            transition: all 0.3s;
-        }
-        .search-bar:focus {
-            outline: none;
-            background: #FFFFFF;
-            border-color: #0071E3;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-        }
-        .btn-primary {
-            background: #0071E3;
-            color: white;
-            border-radius: 980px;
-            padding: 10px 24px;
-            font-weight: 500;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .btn-primary:hover:not(:disabled) {
-            background: #0077ED;
-            transform: scale(1.02);
-        }
-        .btn-primary:disabled {
-            background: #A1A1A6;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-        .btn-secondary {
-            background: #FFFFFF;
-            color: #1D1D1F;
-            border: 1px solid #D2D2D7;
-            border-radius: 980px;
-            padding: 8px 20px;
-            font-size: 13px;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .btn-secondary:hover {
-            background: #F5F5F7;
-        }
-        .badge {
-            font-size: 11px;
-            padding: 2px 10px;
-            border-radius: 100px;
-            font-weight: 600;
-        }
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            scroll-margin-top: 100px;
-        }
-        .section-title::after {
-            content: "";
-            height: 1px;
-            flex-grow: 1;
-            background: #D2D2D7;
-            opacity: 0.5;
-        }
-        .nav-chip {
-            font-size: 13px;
-            padding: 6px 16px;
-            border-radius: 980px;
+        body.light-mode .product-card:hover {
             background: white;
-            border: 1px solid #D2D2D7;
-            transition: all 0.2s;
-            white-space: nowrap;
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.1);
         }
-        .nav-chip:hover {
-            background: #F5F5F7;
-            border-color: #86868B;
+
+        /* Custom Inputs */
+        .custom-input {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 14px 18px;
+            color: white;
+            transition: all 0.4s;
         }
-        /* 简单加载动画 */
+        body.light-mode .custom-input {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #0f172a;
+        }
+        .custom-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Category Banner */
+        .category-banner {
+            height: 320px;
+            border-radius: 40px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: flex-end;
+            padding: 3rem;
+            overflow: hidden;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5);
+        }
+        .category-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(2, 6, 23, 0.85) 100%);
+        }
+        body.light-mode .category-banner::after {
+            background: linear-gradient(180deg, transparent 20%, rgba(241, 245, 249, 0.9) 100%);
+        }
+        body.light-mode .category-banner h2 {
+            color: #0f172a;
+        }
+
+        /* Utility */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
         .skeleton {
-            background: linear-gradient(90deg, #eeeeee 25%, #f5f5f5 50%, #eeeeee 75%);
+            background: linear-gradient(90deg, #0f172a 25%, #1e293b 50%, #0f172a 75%);
             background-size: 200% 100%;
-            animation: loading 1.5s infinite;
+            animation: loading 2s infinite ease-in-out;
+        }
+        body.light-mode .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
         }
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* Light mode text colors */
+        body.light-mode .text-white { color: #0f172a !important; }
+        body.light-mode .text-slate-300 { color: #334155 !important; }
+        body.light-mode .text-slate-400 { color: #475569 !important; }
+        body.light-mode .bg-slate-950\/40 { background: #f1f5f9 !important; }
+        body.light-mode .product-card h3 { color: #0f172a !important; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="antialiased selection:bg-indigo-500/30 light-mode">
+    <!-- Animated Orbs -->
+    <div class="aurora-container">
+        <div class="orb bg-indigo-600" style="top: -20%; left: -10%;"></div>
+        <div class="orb bg-purple-600" style="bottom: -20%; right: -10%; animation-delay: -7s;"></div>
+        <div class="orb bg-blue-600" style="top: 30%; right: 10%; animation-delay: -12s; width: 600px; height: 600px;"></div>
+    </div>
 
-    <div class="max-w-7xl mx-auto">
-        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-                <h1 class="text-4xl font-semibold tracking-tight" data-t="main-title">产品 PIM 云系统</h1>
-                <p class="text-gray-500 mt-1 italic font-light tracking-wide" data-t="sub-title">专业级产品库存管理系统</p>
+    <div class="flex flex-col lg:flex-row min-h-screen p-4 md:p-6 lg:p-8 gap-6">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-full lg:w-[420px] flex flex-col z-30 lg:sticky lg:top-8 lg:h-[calc(100vh-64px)]">
+            <div class="glass rounded-[40px] p-8 h-full flex flex-col overflow-hidden">
+                <div class="mb-10 flex items-center gap-5">
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-indigo-500/20 rotate-6">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black tracking-tight leading-none" data-t="main-title">PIM Cloud</h1>
+                        <p class="text-[10px] text-indigo-400 font-black uppercase tracking-[0.3em] mt-1" data-t="sub-title">Inventory Master</p>
+                    </div>
+                </div>
+
+                <div class="flex-grow space-y-8 overflow-y-auto pr-2 hide-scrollbar">
+                    <section class="bg-slate-950/40 p-7 rounded-[2.5rem] border border-white/5">
+                        <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.25em] mb-8 flex items-center gap-3">
+                            <span class="w-8 h-[2px] bg-indigo-500/50"></span>
+                            <span data-t="form-title">Product Entry</span>
+                        </h2>
+                        <form id="product-form" class="space-y-6">
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-name">Product Name</label>
+                                <input type="text" id="name" data-t-placeholder="ph-name" placeholder="e.g. Smart Refrigerator" class="custom-input text-sm w-full" required>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-sku">SKU Code</label>
+                                    <input type="text" id="sku" placeholder="SN-001" class="custom-input text-sm w-full" required>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-cat">Category</label>
+                                    <select id="category" class="custom-input text-sm w-full appearance-none cursor-pointer">
+                                        <option value="Kitchen" data-t="cat-k">Kitchen</option>
+                                        <option value="Bathroom" data-t="cat-l">Bathroom</option>
+                                        <option value="Cooling" data-t="cat-c">Cooling</option>
+                                        <option value="Small" data-t="cat-s">Small Gadgets</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-brand">Brand</label>
+                                    <input type="text" id="brand" placeholder="e.g. Samsung" class="custom-input text-sm w-full">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-dim">Dimension</label>
+                                    <input type="text" id="dimension" placeholder="H x W x D" class="custom-input text-sm w-full">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-colour">Colour</label>
+                                    <input type="text" id="colour" placeholder="e.g. Inox" class="custom-input text-sm w-full">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-power">Power</label>
+                                    <input type="text" id="power" placeholder="e.g. 2000W" class="custom-input text-sm w-full">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-cost">Cost (RM)</label>
+                                    <input type="number" id="cost" step="0.01" placeholder="0.00" class="custom-input text-sm w-full" required>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-price">Selling (RM)</label>
+                                    <input type="number" id="price" step="0.01" placeholder="0.00" class="custom-input text-sm w-full" required>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-stock">Stock Qty</label>
+                                    <input type="number" id="stock" placeholder="0" class="custom-input text-sm w-full" required>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] font-bold text-slate-400 mb-2 ml-1 block uppercase tracking-wider" data-t="label-spec">Other Specs</label>
+                                    <input type="text" id="specs" data-t-placeholder="ph-spec" placeholder="10kg / 500L" class="custom-input text-sm w-full">
+                                </div>
+                            </div>
+                            <button type="submit" id="save-btn" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-bold shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50" data-t="btn-save">
+                                Sync to Cloud
+                            </button>
+                        </form>
+                    </section>
+
+                    <div class="bg-indigo-500/5 p-6 rounded-[2rem] border border-indigo-500/10 backdrop-blur-md">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                            <p id="sync-status" class="text-xs text-indigo-300 font-black uppercase tracking-widest" data-t="sync-init">System Ready</p>
+                        </div>
+                        <p class="text-[10px] text-indigo-400/60 font-medium leading-relaxed" data-t="sync-desc">Cloud persistence is active with Firebase.</p>
+                    </div>
+                </div>
             </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-grow flex flex-col gap-8">
             
-            <div class="flex flex-col md:flex-row items-center gap-4">
-                <div class="relative w-full md:w-80">
-                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <input type="text" id="search-input" data-t-placeholder="search-placeholder" placeholder="搜索产品名称或 SKU..." class="search-bar">
+            <!-- Unified Header Bar -->
+            <header class="glass rounded-[32px] p-4 flex flex-col xl:flex-row justify-between items-center gap-4 z-20">
+                <div class="relative w-full xl:w-[460px] group">
+                    <svg class="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="search-input" data-t-placeholder="search-placeholder" placeholder="Search products..." class="w-full bg-slate-950/40 border-none rounded-2xl py-4 pl-14 pr-6 text-sm focus:ring-2 focus:ring-indigo-500/40 transition-all">
                 </div>
-                <button id="lang-toggle" class="btn-secondary flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
-                    <span id="lang-text">English</span>
-                </button>
-            </div>
 
-            <div id="stats" class="hidden md:flex gap-8 items-center">
-                <button onclick="exportToCSV()" class="btn-secondary flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    <span data-t="btn-backup">备份至 CSV</span>
-                </button>
-                <div class="text-right">
-                    <span class="text-[10px] text-gray-400 block uppercase font-bold tracking-widest" data-t="sku-count-label">在线 SKU 数量</span>
-                    <span id="product-count" class="text-2xl font-medium tracking-tight">0</span>
-                </div>
-            </div>
-        </header>
-
-        <nav class="flex flex-wrap gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
-            <a href="#Kitchen-Section" class="nav-chip" data-t="nav-kitchen">厨房电器</a>
-            <a href="#Laundry-Section" class="nav-chip" data-t="nav-laundry">洗衣与护理</a>
-            <a href="#Cooling-Section" class="nav-chip" data-t="nav-cooling">制冷与空调</a>
-            <a href="#Small-Section" class="nav-chip" data-t="nav-small">小型设备</a>
-        </nav>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
-            <aside class="lg:col-span-1">
-                <div class="bento-card p-6 rounded-[2.5rem] sticky top-8 shadow-sm">
-                    <h2 class="text-xl font-semibold mb-6" data-t="form-title">新建云端条目</h2>
-                    <form id="product-form" class="space-y-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-gray-400 mb-1 ml-1 block uppercase tracking-wider" data-t="label-name">产品名称</label>
-                            <input type="text" id="name" data-t-placeholder="ph-name" placeholder="例如：松下冰箱" class="apple-input w-full" required>
+                <div class="flex items-center gap-3 w-full xl:w-auto overflow-x-auto hide-scrollbar pb-1 xl:pb-0">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" class="bg-slate-950/40 hover:bg-slate-900 border-none rounded-2xl px-5 py-4 flex items-center justify-center transition-all group">
+                        <svg id="sun-icon" class="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
+                        <svg id="moon-icon" class="w-5 h-5 text-indigo-400 hidden group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    </button>
+                    
+                    <button id="lang-toggle" class="bg-slate-950/40 hover:bg-slate-900 border-none rounded-2xl px-6 py-4 text-xs font-black uppercase tracking-widest flex items-center gap-3 transition-all">
+                        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                        <span id="lang-text">中文</span>
+                    </button>
+                    <button onclick="exportToCSV()" class="bg-slate-950/40 hover:bg-slate-900 border-none rounded-2xl px-6 py-4 text-xs font-black uppercase tracking-widest flex items-center gap-3 transition-all">
+                        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span data-t="btn-backup">CSV Backup</span>
+                    </button>
+                    <div class="bg-indigo-600 px-8 py-4 rounded-2xl shadow-lg shadow-indigo-900/20 flex items-center gap-4 min-w-max">
+                        <div class="text-left">
+                            <span class="text-[8px] text-indigo-200 block font-black uppercase tracking-[0.2em] leading-none mb-1.5" data-t="sku-count-label">SKU Online</span>
+                            <span id="product-count" class="text-2xl font-black text-white leading-none">0</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 mb-1 ml-1 block uppercase tracking-wider" data-t="label-sku">SKU</label>
-                                <input type="text" id="sku" placeholder="NR-BYXXX" class="apple-input w-full" required>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 mb-1 ml-1 block uppercase tracking-wider" data-t="label-cat">分类</label>
-                                <select id="category" class="apple-input w-full">
-                                    <option value="Kitchen" data-t="cat-k">厨房</option>
-                                    <option value="Laundry" data-t="cat-l">洗衣</option>
-                                    <option value="Cooling" data-t="cat-c">制冷</option>
-                                    <option value="Small" data-t="cat-s">小型项目</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 mb-1 ml-1 block uppercase tracking-wider" data-t="label-cost">成本 (RM)</label>
-                                <input type="number" id="cost" step="0.01" placeholder="0.00" class="apple-input w-full" required>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 mb-1 ml-1 block uppercase tracking-wider" data-t="label-price">售价 (RM)</label>
-                                <input type="number" id="price" step="0.01" placeholder="0.00" class="apple-input w-full" required>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 mb-1 ml-1 block uppercase tracking-wider" data-t="label-stock">库存数量</label>
-                                <input type="number" id="stock" placeholder="0" class="apple-input w-full" required>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold text-gray-400 mb-1 ml-1 block uppercase tracking-wider" data-t="label-spec">规格</label>
-                                <input type="text" id="specs" data-t-placeholder="ph-spec" placeholder="12.5KG / 2000W" class="apple-input w-full">
-                            </div>
-                        </div>
-                        <button type="submit" id="save-btn" class="btn-primary w-full mt-4 py-4 text-lg" data-t="btn-save">保存到云端</button>
-                    </form>
-                    <div class="mt-6 p-4 bg-green-50 rounded-2xl border border-green-100">
-                        <p id="sync-status" class="text-[11px] text-green-600 font-medium italic" data-t="sync-init">正在初始化云同步...</p>
-                        <p class="text-[10px] text-green-400 mt-1" data-t="sync-desc">数据将自动保存至 Firebase 数据库。</p>
                     </div>
                 </div>
-            </aside>
+            </header>
 
-            <main class="lg:col-span-3">
-                <div id="content-area">
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        <div class="h-[340px] rounded-[2.5rem] skeleton opacity-40"></div>
-                        <div class="h-[340px] rounded-[2.5rem] skeleton opacity-40"></div>
-                        <div class="h-[340px] rounded-[2.5rem] skeleton opacity-40"></div>
-                    </div>
+            <!-- Categorized View Area -->
+            <div id="content-area" class="space-y-32 pb-32">
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <div class="h-[420px] rounded-[3rem] skeleton"></div>
+                    <div class="h-[420px] rounded-[3rem] skeleton"></div>
+                    <div class="h-[420px] rounded-[3rem] skeleton"></div>
                 </div>
-                
-                <div id="empty-state" class="hidden py-20 text-center">
-                    <p class="text-gray-400 text-lg" data-t="empty-msg">未找到匹配的产品。</p>
+            </div>
+
+            <div id="empty-state" class="hidden py-40 text-center flex flex-col items-center">
+                <div class="w-32 h-32 bg-slate-900/50 rounded-full flex items-center justify-center mb-8 border border-white/5 text-slate-700">
+                    <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                 </div>
-            </main>
-        </div>
+                <p class="text-slate-500 text-2xl font-bold" data-t="empty-msg">No products in cloud database.</p>
+            </div>
+        </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { 
-            getFirestore, 
-            collection, 
-            addDoc, 
-            deleteDoc, 
-            doc, 
-            onSnapshot, 
-            query, 
-            orderBy,
-            serverTimestamp 
+            getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyD1xDsdxSTi0z9SCRiFxI4S_GwEvIWO7z0",
             authDomain: "wmsmartpim.firebaseapp.com",
@@ -268,17 +344,18 @@
         const inventoryRef = collection(db, "pim_inventory");
 
         const translations = {
-            zh: {
-                "main-title": "产品 PIM 云系统", "sub-title": "专业级产品库存管理系统", "search-placeholder": "搜索产品名称或 SKU...", "btn-backup": "备份至 CSV", "sku-count-label": "在线 SKU 数量", "nav-kitchen": "厨房电器", "nav-laundry": "洗衣与护理", "nav-cooling": "制冷与空调", "nav-small": "小型设备", "form-title": "新建云端条目", "label-name": "产品名称", "ph-name": "例如：松下冰箱", "label-sku": "SKU", "label-cat": "分类", "cat-k": "厨房", "cat-l": "洗衣", "cat-c": "制冷", "cat-s": "小型项目", "label-cost": "成本 (RM)", "label-price": "售价 (RM)", "label-stock": "库存数量", "label-spec": "规格", "ph-spec": "12.5KG / 2000W", "btn-save": "保存到云端", "sync-init": "正在初始化云同步...", "sync-desc": "数据将自动保存至 Firebase 数据库。", "empty-msg": "未找到匹配的产品。", "items-unit": "件", "margin-label": "利润率", "stock-label": "库存", "spec-label": "规格", "cost-label": "成本", "profit-label": "收益", "price-label": "销售价格", "delete-confirm": "确定要从云端数据库中永久移除此产品吗？", "sync-success": "云端已同步", "sync-fail": "连接失败"
-            },
             en: {
-                "main-title": "PIM Cloud System", "sub-title": "Professional Inventory Management", "search-placeholder": "Search name or SKU...", "btn-backup": "Backup to CSV", "sku-count-label": "Total Online SKUs", "nav-kitchen": "Kitchen", "nav-laundry": "Laundry", "nav-cooling": "Cooling", "nav-small": "Small Items", "form-title": "Add New Product", "label-name": "Product Name", "ph-name": "e.g. Panasonic Fridge", "label-sku": "SKU", "label-cat": "Category", "cat-k": "Kitchen", "cat-l": "Laundry", "cat-c": "Cooling", "cat-s": "Small Projects", "label-cost": "Cost (RM)", "label-price": "Price (RM)", "label-stock": "Stock Level", "label-spec": "Specs", "ph-spec": "12.5KG / 2000W", "btn-save": "Save to Cloud", "sync-init": "Initializing...", "sync-desc": "Real-time sync enabled.", "empty-msg": "No products found.", "items-unit": "Items", "margin-label": "Margin", "stock-label": "Stock", "spec-label": "Spec", "cost-label": "Cost", "profit-label": "Profit", "price-label": "Price", "delete-confirm": "Delete this item permanently?", "sync-success": "Synced", "sync-fail": "Offline"
+                "main-title": "PIM Cloud", "sub-title": "Inventory Management", "search-placeholder": "Search name or SKU code...", "btn-backup": "Export CSV", "sku-count-label": "SKU Count", "nav-kitchen": "Kitchen Appliances", "nav-laundry": "Bathroom Solutions", "nav-cooling": "Cooling Systems", "nav-small": "Smart Gadgets", "form-title": "Inventory Entry", "label-name": "Product Title", "ph-name": "e.g. Panasonic OLED TV", "label-sku": "SKU", "label-cat": "Group", "cat-k": "Kitchen", "cat-l": "Bathroom", "cat-c": "Cooling", "cat-s": "Small Items", "label-cost": "Cost (RM)", "label-price": "Price (RM)", "label-stock": "Available Stock", "label-spec": "Tech Specs", "ph-spec": "500W / 15 Liters", "btn-save": "Sync to Cloud", "sync-init": "Initializing Sync...", "sync-desc": "Real-time Firebase link enabled.", "empty-msg": "No records found matching your search.", "items-unit": "Items", "margin-label": "Margin", "stock-label": "Stock", "spec-label": "Spec", "cost-label": "Cost", "profit-label": "Profit", "price-label": "Sales Price", "delete-confirm": "Permanently delete this cloud entry?", "sync-success": "Cloud Synced", "sync-fail": "Connection Offline", "label-brand": "Brand", "label-dim": "Dimension", "label-colour": "Colour", "label-power": "Power"
+            },
+            zh: {
+                "main-title": "产品 PIM 云系统", "sub-title": "库存管理大师", "search-placeholder": "搜索产品名称或 SKU...", "btn-backup": "备份至 CSV", "sku-count-label": "在线 SKU 数量", "nav-kitchen": "厨房电器", "nav-laundry": "浴室解决方案", "nav-cooling": "制冷与空调", "nav-small": "小型设备", "form-title": "库存录入", "label-name": "产品名称", "ph-name": "例如：松下智能冰箱", "label-sku": "SKU", "label-cat": "分类", "cat-k": "厨房", "cat-l": "浴室", "cat-c": "制冷", "cat-s": "小型项目", "label-cost": "成本 (RM)", "label-price": "售价 (RM)", "label-stock": "库存数量", "label-spec": "技术规格", "ph-spec": "12.5KG / 2000W", "btn-save": "同步到云端", "sync-init": "正在初始化同步...", "sync-desc": "Firebase 实时连接已启用。", "empty-msg": "未找到匹配的产品数据。", "items-unit": "件", "margin-label": "利润率", "stock-label": "库存", "spec-label": "规格", "cost-label": "成本", "profit-label": "利润", "price-label": "销售价格", "delete-confirm": "确定要从云端数据库中永久移除此产品吗？", "sync-success": "云端已同步", "sync-fail": "连接失败", "label-brand": "品牌", "label-dim": "尺寸", "label-colour": "颜色", "label-power": "功率"
             }
         };
 
-        let currentLang = 'zh';
+        let currentLang = 'en';
         let products = [];
         let searchQuery = "";
+        let isDarkMode = false; // Set default to false (Light Mode)
 
         const form = document.getElementById('product-form');
         const contentArea = document.getElementById('content-area');
@@ -287,10 +364,19 @@
         const syncStatus = document.getElementById('sync-status');
         const langToggle = document.getElementById('lang-toggle');
         const saveBtn = document.getElementById('save-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+
+        // Theme Logic
+        themeToggle.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('light-mode', !isDarkMode);
+            document.getElementById('sun-icon').classList.toggle('hidden', isDarkMode);
+            document.getElementById('moon-icon').classList.toggle('hidden', !isDarkMode);
+        });
 
         langToggle.addEventListener('click', () => {
-            currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            document.getElementById('lang-text').innerText = currentLang === 'zh' ? 'English' : '中文';
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            document.getElementById('lang-text').innerText = currentLang === 'en' ? '中文' : 'English';
             updateUI();
         });
 
@@ -310,10 +396,11 @@
         onSnapshot(query(inventoryRef, orderBy("createdAt", "desc")), (snapshot) => {
             products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderDashboard();
-            syncStatus.innerText = translations[currentLang]["sync-success"] + ": " + new Date().toLocaleTimeString();
+            syncStatus.innerText = translations[currentLang]["sync-success"];
+            syncStatus.className = 'text-xs text-emerald-400 font-black uppercase tracking-widest';
         }, (error) => {
             syncStatus.innerText = translations[currentLang]["sync-fail"];
-            syncStatus.className = 'text-[11px] text-red-600 font-medium italic';
+            syncStatus.className = 'text-xs text-rose-500 font-black uppercase tracking-widest';
         });
 
         searchInput.addEventListener('input', (e) => {
@@ -333,6 +420,10 @@
                 name: document.getElementById('name').value,
                 sku: document.getElementById('sku').value,
                 category: document.getElementById('category').value,
+                brand: document.getElementById('brand').value || 'N/A',
+                dimension: document.getElementById('dimension').value || 'N/A',
+                colour: document.getElementById('colour').value || 'N/A',
+                power: document.getElementById('power').value || 'N/A',
                 cost: cost,
                 price: price,
                 stock: parseInt(document.getElementById('stock').value),
@@ -345,7 +436,7 @@
                 await addDoc(inventoryRef, newProduct);
                 form.reset();
             } catch (err) { 
-                alert("Error: " + err.message); 
+                console.error(err);
             } finally {
                 saveBtn.disabled = false;
             }
@@ -368,46 +459,115 @@
                 return acc;
             }, {});
 
-            const getCatName = (cat) => {
-                const m = { 'Kitchen': t['nav-kitchen'], 'Laundry': t['nav-laundry'], 'Cooling': t['nav-cooling'], 'Small': t['nav-small'] };
-                return m[cat] || cat;
+            const catConfig = {
+                'Kitchen': { name: t['nav-kitchen'], img: 'https://cwservicesinc.com/wp-content/uploads/Must-Have-Small-Kitchen-Appliances.jpg' },
+                'Bathroom': { name: t['nav-laundry'], img: 'https://fancyhouse-design.com/wp-content/uploads/2023/11/A-floating-vanity-counter-is-the-star-of-this-minimalist-bathroom-design..jpg' },
+                'Cooling': { name: t['nav-cooling'], img: 'https://static.vecteezy.com/system/resources/thumbnails/050/033/219/small/a-sleek-air-conditioning-unit-is-installed-high-on-the-wall-emitting-a-soft-blue-glow-while-cooling-the-room-in-the-heat-of-summer-photo.jpeg' },
+                'Small': { name: t['nav-small'], img: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&w=1200&q=80' }
             };
 
-            ['Kitchen', 'Laundry', 'Cooling', 'Small'].forEach(cat => {
+            ['Kitchen', 'Bathroom', 'Cooling', 'Small'].forEach(cat => {
                 if (grouped[cat]) {
                     const section = document.createElement('section');
-                    section.className = 'mb-12';
-                    section.id = cat + '-Section';
-                    section.innerHTML = `<h2 class="section-title"><span>${getCatName(cat)}</span> <span class="text-xs font-medium text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-100">${grouped[cat].length} ${t['items-unit']}</span></h2><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"></div>`;
-                    
-                    const grid = section.querySelector('div');
-                    grouped[cat].forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = 'bento-card rounded-[2.5rem] p-7 flex flex-col justify-between h-[340px]';
-                        card.innerHTML = `
-                            <div>
-                                <div class="flex justify-between items-start mb-4">
-                                    <span class="badge ${item.margin >= 30 ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">${item.margin}% ${t['margin-label']}</span>
-                                    <span class="badge ${item.stock <= 2 ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'}">${t['stock-label']}: ${item.stock}</span>
-                                </div>
-                                <h3 class="text-xl font-semibold mb-1 line-clamp-2">${item.name}</h3>
-                                <p class="text-sm text-gray-400 font-mono uppercase">${item.sku}</p>
-                                <div class="mt-4"><span class="text-[10px] text-gray-500 bg-white px-2 py-1 rounded-md border border-gray-200">${t['spec-label']}: ${item.specs}</span></div>
+                    section.innerHTML = `
+                        <div class="category-banner" style="background-image: url('${catConfig[cat].img}')">
+                            <div class="relative z-10 flex flex-col items-start gap-4">
+                                <span class="bg-indigo-600 px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-[0.2em] shadow-lg">
+                                    ${grouped[cat].length} ${t['items-unit']}
+                                </span>
+                                <h2 class="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none">${catConfig[cat].name}</h2>
                             </div>
-                            <div class="border-t border-gray-100 pt-5 mt-auto">
-                                <div class="flex justify-between items-end">
-                                    <div>
-                                        <div class="flex gap-4 mb-2">
-                                            <div><p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">${t['cost-label']}</p><p class="text-xs text-gray-500">RM ${Number(item.cost).toLocaleString()}</p></div>
-                                            <div><p class="text-[9px] text-gray-400 uppercase font-bold tracking-widest">${t['profit-label']}</p><p class="text-xs text-blue-600 font-semibold">+RM ${Number(item.price - item.cost).toLocaleString()}</p></div>
-                                        </div>
-                                        <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1">${t['price-label']}</p>
-                                        <p class="text-2xl font-semibold">RM ${Number(item.price).toLocaleString()}</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
+                    `;
+                    
+                    const grid = section.querySelector('div.grid');
+                    grouped[cat].forEach((item, idx) => {
+                        const card = document.createElement('div');
+                        card.className = 'product-card glass p-10 rounded-[40px] flex flex-col';
+                        if (idx % 3 === 1) card.classList.add('xl:translate-y-12');
+
+                        card.innerHTML = `
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start mb-10">
+                                    <div class="px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.margin >= 30 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-orange-500/10 text-orange-400'} border border-white/5 backdrop-blur-md">
+                                        ${item.margin}% ${t['margin-label']}
                                     </div>
-                                    <button class="delete-btn text-gray-300 hover:text-red-500 p-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1-1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
+                                    <div class="px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest ${item.stock <= 2 ? 'bg-rose-500/20 text-rose-400' : 'bg-slate-800/60 text-slate-400'} border border-white/5">
+                                        ${t['stock-label']}: ${item.stock}
+                                    </div>
+                                </div>
+                                <h3 class="text-3xl font-black mb-3 text-white line-clamp-2 leading-[1.1] tracking-tight hover:text-indigo-400 transition-colors cursor-pointer">${item.name}</h3>
+                                <p class="text-[11px] text-slate-500 font-black tracking-[0.3em] mb-10 uppercase">${item.sku}</p>
+                                
+                                <div class="p-6 bg-slate-950/40 rounded-3xl border border-white/5 mb-10 group/spec relative overflow-hidden">
+                                    <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-[11px]">
+                                        <div>
+                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-brand']}</p>
+                                            <p class="font-bold text-slate-300">${item.brand || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-colour']}</p>
+                                            <p class="font-bold text-slate-300">${item.colour || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-dim']}</p>
+                                            <p class="font-bold text-slate-300">${item.dimension || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['label-power']}</p>
+                                            <p class="font-bold text-slate-300">${item.power || '-'}</p>
+                                        </div>
+                                        <div class="col-span-2 pt-2 border-t border-white/5">
+                                            <p class="text-slate-500 uppercase font-black tracking-widest mb-1 text-[8px]">${t['spec-label']}</p>
+                                            <p class="font-bold text-slate-300">${item.specs}</p>
+                                        </div>
+                                    </div>
+                                    <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-indigo-500/10 blur-2xl group-hover/spec:bg-indigo-500/20 transition-all"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-white/10 pt-10">
+                                <div class="flex justify-between items-end">
+                                    <div class="space-y-8">
+                                        <div class="flex gap-10">
+                                            <div>
+                                                <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-2">${t['cost-label']}</p>
+                                                <p class="text-base font-bold text-slate-400 tracking-tight">RM ${Number(item.cost).toLocaleString()}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-[9px] text-indigo-400 uppercase font-black tracking-widest mb-2">${t['profit-label']}</p>
+                                                <p class="text-base font-bold text-indigo-400 tracking-tight">+RM ${Number(item.price - item.cost).toLocaleString()}</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] text-slate-500 uppercase font-black tracking-[0.25em] mb-2">${t['price-label']}</p>
+                                            <p class="text-5xl font-black text-white tracking-tighter tabular-nums">RM ${Number(item.price).toLocaleString()}</p>
+                                        </div>
+                                    </div>
+                                    <button class="delete-btn text-slate-600 hover:text-rose-500 hover:bg-rose-500/10 p-5 rounded-3xl transition-all active:scale-90 border border-transparent hover:border-rose-500/20">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         `;
+                        
+                        card.addEventListener('mousemove', (e) => {
+                            const rect = card.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            const centerX = rect.width / 2;
+                            const centerY = rect.height / 2;
+                            const rotateX = (y - centerY) / 30;
+                            const rotateY = (centerX - x) / 30;
+                            card.style.transform = `perspective(2000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+                        });
+                        card.addEventListener('mouseleave', () => {
+                            card.style.transform = `perspective(2000px) rotateX(0deg) rotateY(0deg) translateY(0)`;
+                        });
+
                         card.querySelector('.delete-btn').onclick = async () => {
                             if(confirm(t["delete-confirm"])) await deleteDoc(doc(db, "pim_inventory", item.id));
                         };
@@ -420,8 +580,8 @@
 
         window.exportToCSV = function() {
             const t = translations[currentLang];
-            const headers = [t["label-name"], t["label-sku"], t["label-cat"], t["label-cost"], t["label-price"], t["label-stock"], t["margin-label"], t["label-spec"]];
-            const rows = products.map(p => [p.name, p.sku, p.category, p.cost, p.price, p.stock, p.margin, p.specs]);
+            const headers = [t["label-name"], t["label-sku"], t["label-cat"], t["label-brand"], t["label-dim"], t["label-colour"], t["label-power"], t["label-cost"], t["label-price"], t["label-stock"], t["margin-label"], t["label-spec"]];
+            const rows = products.map(p => [p.name, p.sku, p.category, p.brand, p.dimension, p.colour, p.power, p.cost, p.price, p.stock, p.margin, p.specs]);
             let csvContent = "data:text/csv;charset=utf-8,\ufeff" + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
             const link = document.createElement("a");
             link.href = encodeURI(csvContent);
